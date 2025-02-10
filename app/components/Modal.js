@@ -128,6 +128,8 @@ const Modal = ({service}) => {
       setServiceId(service.service_id);      
   }, [value, bookedSlots])
 
+  //EZT AT KELL ALAKITANI DINAMIKUSSA
+
 
 
   return (
