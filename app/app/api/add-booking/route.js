@@ -40,7 +40,7 @@ export async function POST(request) {
       data: {
         start_time: selectedSlot,
         service_id: serviceId,
-        booking_day: value,
+        booking_day: value
       },
     });
 

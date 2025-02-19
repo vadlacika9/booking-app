@@ -32,9 +32,9 @@ export default function RootLayout({ children }) {
       <head>
         {/* További meta-adatok ide kerülhetnek, pl. charset, title, stb. */}
       </head>
-      <body>
+      <body >
         <SessionProvider>
-          <main>
+          <main >
             <OtherNavbar />
             {children}
           </main>

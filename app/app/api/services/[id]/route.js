@@ -1,32 +1,3 @@
-/*import { PrismaClient } from "@prisma/client";
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from "../auth/[...nextauth]/route";
-
-
-export async function GET(request, { params }){
-  const session = await getServerSession(authOptions);
-  
-  const db = new PrismaClient();
-  const { id } = params;
-
-  try{
-
-  
-  const myServices = await db.services.findMany({
-    where: {
-      service_id: parseInt(id)
-    }
-  })
-  return new Response(
-    JSON.stringify(myServices),
-    {status: 200, headers: {'Content-Type' : 'application/json'}}
-  );
-}catch(error){
-  JSON.stringify({ error: error.message }),
-    { status: 500, headers: { 'Content-Type': 'application/json' } }
-}
-}
-*/
 
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth/next";
@@ -38,7 +9,7 @@ export async function GET(request, { params }) {
   try {
     // Ellenőrizzük a dinamikusan kapott ID-t
     const { id } = await params;
-    console.log("Requested ID:", id);
+ 
 
     if (!id || isNaN(Number(id))) {
       return new Response(
@@ -47,18 +18,20 @@ export async function GET(request, { params }) {
       );
     }
 
-    // Ellenőrizzük a session-t, ha szükséges
-    /*const session = await getServerSession(authOptions);
-    if (!session) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        { status: 401 } // 401 Unauthorized
-      );
-    }*/
+
 
     // Prisma lekérdezés az adott ID alapján
     const service = await prisma.services.findUnique({
       where: { service_id: Number(id) },
+      include: {
+        duration: true,
+        images: true,
+        services_location: {
+          include:{
+            location: true
+          }
+        }
+      }
     });
 
     // Ha nem található az adat
@@ -69,43 +42,34 @@ export async function GET(request, { params }) {
       );
     }
     
-    const serviceImages = await prisma.images.findMany({
-      where: {
-        service_id: Number(id),
-        type: 'service',
-      },
-    });
-
-    const serviceWithLocation = await prisma.services_location.findMany({
-      where: {
-        service_id: Number(id),
-      },
-      include: {
-        services: true, // Ha a szolgáltatás adatait is szeretnéd betölteni
-        location: true, // Ha a helyszín adatokat is szeretnéd betölteni
-      },
-    });
-    
-
+    const allData = service
+    ? 
+        {
+          service_id: service.service_id,
+          user_id: service.user_id,
+          service_name: service.name,
+          service_description: service.description,
+          service_price: service.price,
+          duration_id: service.duration[0]?.duration_id,
+          duration_start_time: service.duration[0]?.start_time,
+          duration_end_time: service.duration[0]?.end_time,
+          image_id: service.images[0].image_id,
+          images: service.images[0].path, // Tömbben az összes kép URL
+          location_id: service.services_location[0]?.location?.location_id,
+          postal_code: service.services_location[0]?.location?.postal_code,
+          county: service.services_location[0]?.location?.county,
+          service_location: service.services_location[0]?.location?.city,
+          service_address: service.services_location[0]?.location?.address,
+          days_available: service.duration[0].service_days_available
+        }
       
-      const images = serviceImages.length > 0 
-      ? serviceImages.map(img => img.path) // Ha van több kép, egy tömbben küldjük vissza
-      : ['https://ceouekx9cbptssme.public.blob.vercel-storage.com/default-oCOnxEAVLnQCAxCIb9R87WUp5jLrTP.png']; // Alapértelmezett kép
-
-
-    const servicesWithImages = {
-      ...service,
-      images,
-      location: serviceWithLocation[0].location
-    };
- 
+    : [];
     
-    
-    console.log(servicesWithImages);
+
 
     // Sikeres válasz
     return new Response(
-      JSON.stringify(servicesWithImages),
+      JSON.stringify(allData),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
 

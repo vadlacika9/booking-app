@@ -122,12 +122,14 @@ model services {
   updated_at        DateTime            @default(now()) @db.Timestamp(0)
   price             Float               @db.Float
   user_id           Int
+  phone_number      String              @db.VarChar(50)
   bookings          bookings[]
   duration          duration[]
   exceptions        exceptions[]
   feedback          feedback[]
   images            images[]
   users             users               @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "services_ibfk_2")
+  services_category services_category[]
   services_location services_location[]
 
   @@index([user_id], map: "user_id")
@@ -182,4 +184,21 @@ model user_promotions {
 
   @@id([user_id, promotion_id])
   @@index([promotion_id], map: "promotion_id")
+}
+
+model category {
+  category_id       Int                 @id @default(autoincrement())
+  name              String              @db.VarChar(255)
+  description       String?             @db.Text
+  services_category services_category[]
+}
+
+model services_category {
+  service_id  Int
+  category_id Int
+  services    services @relation(fields: [service_id], references: [service_id], onUpdate: Restrict, map: "services_category_ibfk_1")
+  category    category @relation(fields: [category_id], references: [category_id], onUpdate: Restrict, map: "services_category_ibfk_2")
+
+  @@id([service_id, category_id])
+  @@index([category_id], map: "category_id")
 }

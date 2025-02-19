@@ -43,7 +43,9 @@ export async function POST(request) {
         name: serviceName,
         description: serviceDesc,
         price: parseFloat(servicePrice),
-        user_id: userId
+        user_id: userId,
+        phone_number: ''
+
       }
     })
     const servId = createService.service_id;

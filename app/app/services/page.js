@@ -29,16 +29,18 @@ const Services = () => {
   },[])
 
   return(
-    <div className="bg-black"> 
+    <div className="py-4"> 
     
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {services.map((service) => (
           <ServiceCard
             key={service.service_id}
+            id={service.service_id}
             name={service.name}
             desc={service.description}
             price={service.price}
             image={service.images[0]}
+            location={service.location}
 
           />
         ))}

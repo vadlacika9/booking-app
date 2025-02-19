@@ -72,7 +72,7 @@ const AddService = () => {
       
       setMessage(data.message);
       
-      
+      router.push('/')
       
     }catch(error){
       console.log(error);

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 
@@ -8,27 +8,39 @@ export default function OtherNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const {data: session, status} = useSession();
   
+  
   return (
     
-    <nav className="bg-black p-4">
-      <div className="container mx-auto flex items-center justify-between h-12">
+    <nav className="bg-black py-4 z-20 transition-all duration-300">
+      <div className=" max-w-7xl mx-auto flex items-center justify-between  px-4 md:px-8 h-16">
         {/* Logo */}
-        <div className="text-white text-xl font-bold pl-28">
+        <div className="text-white text-xl font-bold">
           <Link href="/">MyLogo</Link>
         </div>
 
         {/* Menu Items (hidden on small screens) */}
-        <div className="hidden md:flex space-x-6 p-5">
-        {status === 'unauthenticated' && <Link href='/api/auth/signin' className='text-white hover:text-gray-300'>Login</Link>}
-          <Link 
-            href="/add-service" 
-            className={`text-white hover:text-gray-300 ${status === 'unauthenticated' ? 'pr-28' : ''}`}
+        <div className="hidden md:flex space-x-6 ">
+       
+        {status === 'authenticated' && (
+            <Link href="/account" className="text-white hover:text-gray-300 flex items-center space-x-2">
+              <img src="/icons/User.svg" alt="User Icon" width="25" height="25" />
+              <span>Profile</span>
+            </Link>
+          )}
+          {status === 'unauthenticated' && (
+            <Link href="/api/auth/signin" className="text-white hover:text-gray-300 p-2">
+              Login
+            </Link>
+          )}
+          <Link
+            href="/add-service"
+            className="bg-white text-black px-4 py-2 rounded-lg hover:bg-gray-300 transition"
           >
             Add your Service
           </Link>
           
-          {status === 'authenticated' && <Link href='/my_services' className='text-white hover:text-gray-300'>My Services</Link>}
-          {status === 'authenticated' && <Link href='/api/auth/signout' className='text-white hover:text-gray-300 pr-28'>Sign out</Link>}
+          
+          
         </div>
 
         {/* Mobile Menu Button */}
