@@ -107,7 +107,7 @@ const Bookings = () => {
 
   
   if (service && session && session.user && Number(service.user_id) !== Number(session.user.id)) {
-    return <div>You don't have access to be here</div>;
+    return <div>You dont have access to be here</div>;
   }
   
   console.log(session.user.id)

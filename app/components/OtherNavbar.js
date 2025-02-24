@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 
 export default function OtherNavbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,7 +24,7 @@ export default function OtherNavbar() {
        
         {status === 'authenticated' && (
             <Link href="/account" className="text-white hover:text-gray-300 flex items-center space-x-2">
-              <img src="/icons/User.svg" alt="User Icon" width="25" height="25" />
+              <Image src="/icons/User.svg" alt="User Icon" width="25" height="25" />
               <span>Profile</span>
             </Link>
           )}

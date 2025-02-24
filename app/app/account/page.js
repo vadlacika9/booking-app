@@ -22,7 +22,7 @@ const Profile = () => {
     if (session && session.user) {
       setUser(session.user);
     }
-  }, [session]);
+  }, [session, router, status]);
 
   if (status === "loading") {
     return <div>Loading...</div>;
