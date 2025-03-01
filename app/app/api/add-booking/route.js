@@ -14,6 +14,9 @@ export async function POST(request) {
     }
 
     const body = await request.json();
+    if(body)
+      {console.log(body)}
+    
     const { servicePrice, selectedSlot, value, serviceId } = body;
 
     if (!servicePrice || !selectedSlot || !value || !serviceId) {

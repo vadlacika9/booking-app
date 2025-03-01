@@ -71,8 +71,8 @@ export default function Carousel({ services }) {
                 className="rounded-lg w-[300px] h-[200px]"
               />
               <div className="flex flex-col items-start w-full px-3 py-2 mt-2 rounded-md">
-              <div className="text-black font-semibold">{service.name}</div>
-                <div className="text-gray-700"> {service.location?.city}, {service.location?.address} </div>
+              <div className="text-black font-semibold">{service.service_name}</div>
+                <div className="text-gray-700"> {service.service_location}, {service.service_address} </div>
               </div>
             </Link>
           ))}

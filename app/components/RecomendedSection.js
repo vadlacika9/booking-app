@@ -14,6 +14,7 @@ export default function RecommendedSection() {
     const fetchServices = async () => {
       try {
         const response = await fetch('api/services');
+        console.log(response)
         if (!response.ok) {
           throw new Error(`Hiba: ${response.status}`);
         }

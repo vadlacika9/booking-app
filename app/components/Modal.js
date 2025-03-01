@@ -219,6 +219,7 @@ const Modal = ({service}) => {
 
 
   useEffect(() => {
+    console.log(service)
     if (isModalOpen) {
       if (status === "unauthenticated") {
         router.push("/api/auth/signin");
@@ -278,7 +279,7 @@ const Modal = ({service}) => {
 
   return (
     <div>
-      <button onClick={openModal} className="bg-blue-700 rounded-lg w-28 h-10 text-white">Book Now</button>
+      <button onClick={openModal} className="bg-indigo-500 rounded-lg w-28 h-10 text-white">Book Now</button>
       <BookingModal isOpen={isModalOpen} onClose={closeModal}>
         <h2 className="text-center text-lg font-bold">Book an appointment</h2>
         <p className="mt-4 text-center">Select a date:</p>

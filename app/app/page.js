@@ -6,12 +6,21 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import HeroSection from "../components/HeroSection";
 import RecommendedSection from "../components/RecomendedSection";
+import Slidein from "@/components/Slide-in";
 
 
 
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState(null);
+
+
+  useEffect(() => {
+    AOS.init({
+      duration: 1000 // Animáció időtartama (ms)
+    });
+  },[])
+
 
   useEffect(() => {
    
@@ -41,10 +50,10 @@ export default function App() {
   }
 
   return (
-    <div>
+    <div className="overflow-x-hidden">
       <HeroSection />
       <RecommendedSection />
-      
+      <Slidein/>
       
     </div>
   );

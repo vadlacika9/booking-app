@@ -4,6 +4,7 @@ import './globals.css';
 import { SessionProvider } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import OtherNavbar from '@/components/OtherNavbar';
+import Footer from '@/components/Footer';
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
@@ -20,6 +21,7 @@ export default function RootLayout({ children }) {
           <SessionProvider>
             <main>
               {children}
+              <Footer/>
             </main>
           </SessionProvider>
         </body>
@@ -37,6 +39,7 @@ export default function RootLayout({ children }) {
           <main >
             <OtherNavbar />
             {children}
+            <Footer/>
           </main>
         </SessionProvider>
       </body>

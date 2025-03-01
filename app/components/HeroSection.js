@@ -30,7 +30,7 @@ export default function Hero() {
       <div className="relative z-10 flex-grow flex flex-col items-center justify-center">
         <h1 className="text-4xl font-bold mb-4">Glow up with just a click</h1>
         <p className="text-lg mb-6">find top professionals and book instantly.</p>
-        <Link href="/services" className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+        <Link href="/services" className="mt-6 px-6 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 transition">
               Get Started
         </Link> 
       </div>
