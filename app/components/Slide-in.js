@@ -92,7 +92,7 @@ Time-Saving: With online booking, theres no need to make phone calls or visit a 
 
         <h1 className="text-3xl pb-14"><strong> IOS & Android application</strong></h1>
           <p className="text-lg">
-            Coming soon...
+            Coming soon....
           </p>
          
         </div>
