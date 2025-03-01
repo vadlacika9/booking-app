@@ -31,7 +31,7 @@ export default function RecommendedSection() {
     fetchServices();
   }, []); 
 
-  if (loading) return <p>Adatok betöltése...</p>; 
+  if (loading) return <p>Adatok betöltése.....</p>; 
 
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 z-0">
