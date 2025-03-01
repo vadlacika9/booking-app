@@ -37,11 +37,11 @@ const Slidein = () => {
           <p className="text-lg">
           The Advantages of Online Booking
 
-In today's digital age, online booking has become an essential tool for both businesses and customers alike. Here are some of the key advantages of using online booking systems:
+In todays digital age, online booking has become an essential tool for both businesses and customers alike. Here are some of the key advantages of using online booking systems:
 
 Convenience: Online booking allows customers to make reservations at any time of the day or night, from the comfort of their own homes. This flexibility is particularly beneficial for those with busy schedules or those living in different time zones.
 
-Time-Saving: With online booking, there's no need to make phone calls or visit a physical location to secure a reservation. This saves valuable time for both customers and businesses.
+Time-Saving: With online booking, theres no need to make phone calls or visit a physical location to secure a reservation. This saves valuable time for both customers and businesses.
           </p>
          
         </div>
@@ -56,11 +56,11 @@ Time-Saving: With online booking, there's no need to make phone calls or visit a
           <p className="text-lg">
           The Advantages of Online Booking
 
-          In today's digital age, online booking has become an essential tool for both businesses and customers alike. Here are some of the key advantages of using online booking systems:
+          In todays digital age, online booking has become an essential tool for both businesses and customers alike. Here are some of the key advantages of using online booking systems:
 
           Convenience: Online booking allows customers to make reservations at any time of the day or night, from the comfort of their own homes. This flexibility is particularly beneficial for those with busy schedules or those living in different time zones.
 
-          Time-Saving: With online booking, there's no need to make phone calls or visit a physical location to secure a reservation. This saves valuable time for both customers and businesses.
+          Time-Saving: With online booking, theres no need to make phone calls or visit a physical location to secure a reservation. This saves valuable time for both customers and businesses.
           </p>
          
         </div>
