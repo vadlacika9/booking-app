@@ -2,10 +2,16 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from 'bcrypt'
+import GoogleProvider from 'next-auth/providers/google'
+import GithubProvider from 'next-auth/providers/github'
+import { signIn } from "next-auth/react";
 
 
-// Globális PrismaClient példány
 const db = new PrismaClient();
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
+const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID
+const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET
 
 export const authOptions = {
   providers: [
@@ -16,17 +22,22 @@ export const authOptions = {
         password: { label: "password", type: "password" }
       },
       authorize: async (credentials) => {
-        // Felhasználó keresése az adatbázisban
+        
         const user = await db.users.findFirst({
-          where: { username: credentials.username }
+          where: {
+            OR: [
+              { username: credentials.username },
+              { email: credentials.username }
+            ]
+          }
         });
 
-        // Ha nincs ilyen felhasználó, hiba
+        
         if (!user) {
           throw new Error("Hibás felhasználónév vagy jelszó");
         }
 
-        // Jelszó ellenőrzése
+        
         if(user && ( await bcrypt.compare(credentials.password,user.password)))
         {
           return {
@@ -39,40 +50,119 @@ export const authOptions = {
         }
         
 
-        // Felhasználó adatok visszaadása
+        
         
       
-    }})
+    }}),
+    GoogleProvider({
+      clientId: GOOGLE_CLIENT_ID,
+      clientSecret: GOOGLE_CLIENT_SECRET,
+      authorization: {
+        params: {
+          prompt: "select_account",
+        }},
+    }),
+    GithubProvider({
+      clientId: GITHUB_CLIENT_ID,
+      clientSecret: GITHUB_CLIENT_SECRET
+    })
   ],
   session: {
-    strategy: "jwt", // JWT alapú session kezelés
+    strategy: "jwt", 
     maxAge: 60 * 60,
     updateAge: 24 * 60 * 60,
   },
   callbacks: {
     async jwt({ token, user }) {
-      // Ha bejelentkezett a felhasználó, akkor hozzáadjuk a tokenhez az adatokat
+     
       if (user) {
-        token.id = user.id;          // Felhasználó ID
-        token.username = user.username; // Felhasználó neve
-        token.email = user.email;      // Felhasználó emailje
-        token.first_name = user.first_name; // Felhasználó keresztneve
-        token.last_name = user.last_name;   // Felhasználó vezetékneve
+        token.id = user.id;          
+        token.username = user.username; 
+        token.email = user.email;      
+        token.first_name = user.first_name; 
+        token.last_name = user.last_name;   
       }
-      return token; // Visszaadjuk a token-t
+      return token; 
     },
     async session({ session, token }) {
-      // A session objektumban is hozzáadjuk a token adatokat
+
       if (token) {
         session.user.id = token.id;
-        session.user.username = token.username;   // Tokenből jövő username
-        session.user.email = token.email;         // Tokenből jövő email
-        session.user.first_name = token.first_name; // Tokenből jövő keresztneve
-        session.user.last_name = token.last_name;   // Tokenből jövő vezetéknév
+        session.user.username = token.username;   
+        session.user.email = token.email;         
+        session.user.first_name = token.first_name; 
+        session.user.last_name = token.last_name;   
       }
-      return session; // A session visszaadása
+      return session; 
+    },
+    async signIn({ account, profile, credentials}){
+     
+      if(account.provider === "github"){
+        if(!profile?.email){
+          throw new Error("No profile")
+        }
+      
+       const existingUser = await db.users.findUnique({
+        where:{
+          email: profile.email
+        }
+       })
+
+       if (existingUser) {
+        // Ha a felhasználó már létezik, de másik providerrel regisztrált
+        throw new Error(
+            `Ez az e-mail (${profile.email}) már regisztrált egy másik szolgáltatóval (${existingUser.provider}).`
+          );
+        
+      }
+
+      const oauth = "true";
+      await db.users.create({
+        data: {
+          email: profile.email,
+          username: profile.login,
+          oauth: oauth
+          
+        }
+      })
+
+      return true;
+    }else if(account.provider === "google"){
+      if(!profile?.email){
+        throw new Error("No profile")
+      }
+
+      const existingUser = await db.users.findUnique({
+        where:{
+          email: profile.email
+        }
+       })
+
+       if (existingUser) {
+        // Ha a felhasználó már létezik, de másik providerrel regisztrált
+        throw new Error(
+            `Ez az e-mail (${profile.email}) már regisztrált egy másik szolgáltatóval (${existingUser.provider}).`
+          );
+        
+      }
+      const oauth = "true";
+      await db.users.create({
+       
+        data: {
+          email: profile.email,
+          username: profile.name,
+          oauth: oauth
+        }
+        
+      })
+
+      return true;
     }
 
+    if(credentials){
+      return true
+    }
+    }
   },
   
  

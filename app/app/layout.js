@@ -9,19 +9,18 @@ import Footer from '@/components/Footer';
 export default function RootLayout({ children }) {
   const pathname = usePathname();
 
-  // Oldalak, ahol nem akarjuk használni a layoutot
-  const noLayoutPages = ["/"];
+  // pages that have special layout
+  const noLayoutPages = ["/","/api/auth/signin", "/register"];
   if (noLayoutPages.includes(pathname)) {
     return (
       <html lang="en">
         <head>
-          {/* További meta-adatok ide kerülhetnek, pl. charset, title, stb. */}
+          {/* meta */}
         </head>
-        <body>
+        <body className="flex flex-col min-h-screen">
           <SessionProvider>
-            <main>
+            <main className="flex-1">
               {children}
-              <Footer/>
             </main>
           </SessionProvider>
         </body>
@@ -32,15 +31,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        {/* További meta-adatok ide kerülhetnek, pl. charset, title, stb. */}
+        {/* meta */}
       </head>
-      <body >
+      <body className="flex flex-col min-h-screen">
         <SessionProvider>
-          <main >
             <OtherNavbar />
+            <main className="flex-1">
             {children}
+            </main>
             <Footer/>
-          </main>
         </SessionProvider>
       </body>
     </html>

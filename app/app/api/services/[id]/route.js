@@ -1,26 +1,25 @@
 
 import { PrismaClient } from "@prisma/client";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]/route";
+
 
 const prisma = new PrismaClient();
 
 export async function GET(request, { params }) {
   try {
-    // Ellenőrizzük a dinamikusan kapott ID-t
+
     const { id } = await params;
  
 
     if (!id || isNaN(Number(id))) {
       return new Response(
         JSON.stringify({ error: "Invalid ID parameter" }),
-        { status: 400 } // 400 Bad Request
+        { status: 400 } 
       );
     }
 
 
 
-    // Prisma lekérdezés az adott ID alapján
+
     const service = await prisma.services.findUnique({
       where: { service_id: Number(id) },
       include: {
@@ -34,7 +33,7 @@ export async function GET(request, { params }) {
       }
     });
 
-    // Ha nem található az adat
+
     if (!service) {
       return new Response(
         JSON.stringify({ error: "Service not found" }),
@@ -54,7 +53,7 @@ export async function GET(request, { params }) {
           duration_start_time: service.duration[0]?.start_time,
           duration_end_time: service.duration[0]?.end_time,
           image_id: service.images[0].image_id,
-          images: service.images[0].path, // Tömbben az összes kép URL
+          images: service.images[0].path, 
           location_id: service.services_location[0]?.location?.location_id,
           postal_code: service.services_location[0]?.location?.postal_code,
           county: service.services_location[0]?.location?.county,
@@ -67,7 +66,7 @@ export async function GET(request, { params }) {
     
 
 
-    // Sikeres válasz
+
     return new Response(
       JSON.stringify(allData),
       { status: 200, headers: { "Content-Type": "application/json" } }
@@ -79,5 +78,7 @@ export async function GET(request, { params }) {
       JSON.stringify({ error: "Internal Server Error" }),
       { status: 500 } // 500 Internal Server Error
     );
+  }finally{
+    await prisma.$disconnect();
   }
 }

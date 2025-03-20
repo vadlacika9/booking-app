@@ -10,10 +10,11 @@ export async function POST(request) {
    const userId = session.user.id;
   try {
     const body = await request.json();
-    const { serviceName, serviceDesc, servicePrice, serviceCounty, serviceCity, serviceAddress, servicePostal, image, startTime, endTime, availableDays } = body;
+    const { serviceName, serviceDesc, servicePrice, serviceCounty, serviceCity, serviceAddress, servicePostal, image, startTime, endTime, availableDays ,phoneNumber, selectedCategory} = body;
     console.log(body);
-    // Adatok validálása
-    if (!serviceName || !serviceDesc || !servicePrice || !serviceCounty || !serviceCity || !serviceAddress || !servicePostal || !image || !startTime || !endTime || !availableDays) {
+    // validating data
+    
+    if (!serviceName || !serviceDesc || !servicePrice || !serviceCounty || !serviceCity || !serviceAddress || !servicePostal || !image || !startTime || !endTime || !availableDays || !phoneNumber || !selectedCategory) {
       return new Response(
         JSON.stringify({ error: 'Minden mező kitöltése kötelező!' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
@@ -28,15 +29,9 @@ export async function POST(request) {
       }
     })
 
+    const locId = createLocation.location_id; 
 
-    // Első beszúrás a Location táblába
-    /*const sql1 = 'INSERT INTO Location (city, postal_code, county, address) VALUES (?, ?, ?, ?)';
-    const values1 = [serviceCity, servicePostal, serviceCounty, serviceAddress];
-    const locInsert = await query({ query: sql1, values: values1 });*/
-
-    const locId = createLocation.location_id; // Az első táblából származó ID
-
-    // Második beszúrás a Services táblába
+ 
 
     const createService = await db.services.create({
       data:{
@@ -44,7 +39,7 @@ export async function POST(request) {
         description: serviceDesc,
         price: parseFloat(servicePrice),
         user_id: userId,
-        phone_number: ''
+        phone_number: phoneNumber
 
       }
     })
@@ -75,9 +70,12 @@ export async function POST(request) {
       }
     })
 
-    /*const sql2 = 'INSERT INTO Services (name, description, price, location_id, user_id) VALUES (?, ?, ?, ?, ?)';
-    const values2 = [serviceName, serviceDesc, servicePrice, locId, 1];
-    await query({ query: sql2, values: values2 });*/
+    const createServiceCategory = await db.services_category.create({
+      data:{
+        service_id:Number(servId),
+        category_id:Number(selectedCategory)
+      }
+    })
 
     return new Response(
       JSON.stringify({ message: 'Service inserted successfully!' }),
@@ -91,6 +89,8 @@ export async function POST(request) {
       JSON.stringify({ error: error.message }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
+  }finally{
+    await db.$disconnect();
   }
 }
 

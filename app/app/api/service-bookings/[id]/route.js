@@ -60,5 +60,7 @@ export async function GET(request, { params }) {
       JSON.stringify({ error: "Internal Server Error" }),
       { status: 500 }
     );
+  }finally{
+    await db.$disconnect();
   }
 }

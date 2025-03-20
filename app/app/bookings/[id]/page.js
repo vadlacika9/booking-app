@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import Loading from '@/components/Loading';
 
 const Bookings = () => {
   const [bookings, setBookings] = useState(null);
@@ -86,11 +87,11 @@ const Bookings = () => {
 
 
   if (loading) {
-    return <div className="text-center text-lg font-semibold mt-4">Loading...</div>;
+    return <Loading/>
   }
 
   if (status === 'loading') {
-    return <div>Loading...</div>; // Tükrözi, ha a session adat még töltődik
+    return <Loading/>
   }
 
   if (error) {
@@ -121,14 +122,14 @@ const Bookings = () => {
       <div className="flex justify-center items-center gap-4 rounded-lg border-2 border-black px-4 mb-10">
         <button 
           onClick={() => setShowAvailable(false)} 
-          className={`flex-1 p-2 text-center transition-all duration-300 ${!showAvailable ? 'bg-gray-400 text-white' : 'hover:bg-gray-200'}`}
+          className={`flex-1 p-2 text-center transition-all duration-300 ${!showAvailable ? 'bg-indigo-500 text-white' : 'hover:bg-indigo-300'}`}
         >
           All bookings
         </button>
         <div className="h-8 border-l-2 border-gray-900"></div>
         <button 
           onClick={() => setShowAvailable(true)} 
-          className={`flex-1 p-2 text-center transition-all duration-300 ${showAvailable ? 'bg-gray-400 text-white' : 'hover:bg-gray-200'}`}
+          className={`flex-1 p-2 text-center transition-all duration-300 ${showAvailable ? 'bg-indigo-500 text-white' : 'hover:bg-indigo-300'}`}
         >
           Available bookings
         </button>
@@ -137,7 +138,7 @@ const Bookings = () => {
         <div className="overflow-x-auto">
           <table className="w-full border-collapse border border-gray-300">
             <thead>
-              <tr className="bg-gray-100 text-gray-700">
+              <tr className="bg-indigo-500 text-white">
                 <th className="border p-3">Booking Day</th>
                 <th className="border p-3">Time</th>
                 <th className="border p-3">Price</th>
@@ -146,7 +147,7 @@ const Bookings = () => {
             </thead>
             <tbody>
               {displayedBookings.map((booking) => (
-                <tr key={booking.booking_id} className="border text-center hover:bg-gray-50">
+                <tr key={booking.booking_id} className="border text-center hover:bg-indigo-500 hover:text-white">
                   <td className="border p-3">{booking.booking_day}</td>
                   <td className="border p-3">{booking.booking_start_time}</td>
                   <td className="border p-3">${booking.price}</td>

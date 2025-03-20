@@ -17,10 +17,10 @@ model bookings {
   payment_id   Int
   promotion_id Int?
   duration_id  Int
-  services     services    @relation(fields: [service_id], references: [service_id], onDelete: NoAction, onUpdate: NoAction, map: "bookings_ibfk_1")
-  payments     payments    @relation(fields: [payment_id], references: [payment_id], onDelete: NoAction, onUpdate: NoAction, map: "bookings_ibfk_2")
-  promotions   promotions? @relation(fields: [promotion_id], references: [promotion_id], onDelete: NoAction, onUpdate: NoAction, map: "bookings_ibfk_3")
-  duration     duration    @relation(fields: [duration_id], references: [duration_id], onDelete: NoAction, onUpdate: NoAction, map: "bookings_ibfk_4")
+  services     services    @relation(fields: [service_id], references: [service_id], onUpdate: Restrict, map: "bookings_ibfk_1")
+  payments     payments    @relation(fields: [payment_id], references: [payment_id], onUpdate: Restrict, map: "bookings_ibfk_2")
+  promotions   promotions? @relation(fields: [promotion_id], references: [promotion_id], onDelete: Restrict, onUpdate: Restrict, map: "bookings_ibfk_3")
+  duration     duration    @relation(fields: [duration_id], references: [duration_id], onUpdate: Restrict, map: "bookings_ibfk_4")
 
   @@index([duration_id], map: "duration_id")
   @@index([payment_id], map: "payment_id")
@@ -37,8 +37,8 @@ model duration {
   booking_day            String?     @db.VarChar(50)
   service_days_available String?     @db.VarChar(50)
   bookings               bookings[]
-  services               services?   @relation(fields: [service_id], references: [service_id], onDelete: NoAction, onUpdate: NoAction, map: "duration_ibfk_1")
-  exceptions             exceptions? @relation(fields: [exception_id], references: [exception_id], onDelete: NoAction, onUpdate: NoAction, map: "duration_ibfk_2")
+  services               services?   @relation(fields: [service_id], references: [service_id], onDelete: Restrict, onUpdate: Restrict, map: "duration_ibfk_1")
+  exceptions             exceptions? @relation(fields: [exception_id], references: [exception_id], onDelete: Restrict, onUpdate: Restrict, map: "duration_ibfk_2")
 
   @@index([exception_id], map: "exception_id")
   @@index([service_id], map: "service_id")
@@ -49,7 +49,7 @@ model exceptions {
   is_available Boolean    @db.Bit(1)
   service_id   Int
   duration     duration[]
-  services     services   @relation(fields: [service_id], references: [service_id], onDelete: NoAction, onUpdate: NoAction, map: "exceptions_ibfk_1")
+  services     services   @relation(fields: [service_id], references: [service_id], onUpdate: Restrict, map: "exceptions_ibfk_1")
 
   @@index([service_id], map: "service_id")
 }
@@ -57,12 +57,12 @@ model exceptions {
 model feedback {
   feedback_id Int      @id @default(autoincrement())
   rating      Int?
-  comment     Int?
+  comment     String?  @db.VarChar(255)
   created_at  DateTime @default(now()) @db.Timestamp(0)
   user_id     Int
   service_id  Int
-  users       users    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "feedback_ibfk_1")
-  services    services @relation(fields: [service_id], references: [service_id], onDelete: NoAction, onUpdate: NoAction, map: "feedback_ibfk_2")
+  users       users    @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "feedback_ibfk_1")
+  services    services @relation(fields: [service_id], references: [service_id], onUpdate: Restrict, map: "feedback_ibfk_2")
 
   @@index([service_id], map: "service_id")
   @@index([user_id], map: "user_id")
@@ -83,7 +83,7 @@ model notifications {
   sent_at         DateTime @db.Date
   readed          Boolean  @db.Bit(1)
   user_id         Int
-  users           users    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "notifications_ibfk_1")
+  users           users    @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "notifications_ibfk_1")
 
   @@index([user_id], map: "user_id")
 }
@@ -91,12 +91,12 @@ model notifications {
 model payments {
   payment_id Int        @id @default(autoincrement())
   value      Float      @db.Float
-  date       DateTime   @default(now()) @db.Timestamp(0)
+  date       DateTime   @default(now()) @db.Date
   status     String     @db.VarChar(50)
   method     String     @db.VarChar(50)
   user_id    Int
   bookings   bookings[]
-  users      users      @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "payments_ibfk_1")
+  users      users      @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "payments_ibfk_1")
 
   @@index([user_id], map: "user_id")
 }
@@ -119,16 +119,17 @@ model services {
   name              String              @db.VarChar(50)
   description       String              @db.VarChar(50)
   created_at        DateTime            @default(now()) @db.Timestamp(0)
-  updated_at        String?             @db.VarChar(50)
+  updated_at        DateTime            @default(now()) @db.Timestamp(0)
   price             Float               @db.Float
   user_id           Int
   phone_number      String?             @db.VarChar(50)
+  average_rating    Decimal?            @default(0.00) @db.Decimal(3, 2)
   bookings          bookings[]
   duration          duration[]
   exceptions        exceptions[]
   feedback          feedback[]
   images            images[]
-  users             users               @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "services_ibfk_2")
+  users             users               @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "services_ibfk_2")
   services_category services_category[]
   services_location services_location[]
 
@@ -136,15 +137,17 @@ model services {
 }
 
 model users {
-  first_name      String            @db.VarChar(50)
-  email           String            @db.VarChar(50)
+  first_name      String?           @db.VarChar(50)
+  email           String            @unique(map: "unique_email") @db.VarChar(50)
   username        String            @db.VarChar(50)
-  last_name       String            @db.VarChar(50)
+  last_name       String?           @db.VarChar(50)
   role            String?           @db.VarChar(50)
   created_at      DateTime          @default(now()) @db.Timestamp(0)
-  password        String            @db.VarChar(255)
-  phone_number    String            @db.VarChar(50)
+  password        String?           @db.VarChar(255)
+  phone_number    String?           @db.VarChar(50)
   user_id         Int               @id @default(autoincrement())
+  profile_pic     String?           @db.VarChar(255)
+  oauth           String?           @db.VarChar(50)
   feedback        feedback[]
   images          images[]
   notifications   notifications[]
@@ -159,8 +162,8 @@ model images {
   user_id    Int?
   service_id Int?
   type       String    @db.VarChar(255)
-  users      users?    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "images_ibfk_1")
-  services   services? @relation(fields: [service_id], references: [service_id], onDelete: NoAction, onUpdate: NoAction, map: "images_ibfk_2")
+  users      users?    @relation(fields: [user_id], references: [user_id], onDelete: Restrict, onUpdate: Restrict, map: "images_ibfk_1")
+  services   services? @relation(fields: [service_id], references: [service_id], onDelete: Restrict, onUpdate: Restrict, map: "images_ibfk_2")
 
   @@index([service_id], map: "service_id")
   @@index([user_id], map: "user_id")
@@ -169,8 +172,8 @@ model images {
 model services_location {
   service_id  Int
   location_id Int
-  services    services @relation(fields: [service_id], references: [service_id], onDelete: NoAction, onUpdate: NoAction, map: "services_location_ibfk_1")
-  location    location @relation(fields: [location_id], references: [location_id], onDelete: NoAction, onUpdate: NoAction, map: "services_location_ibfk_2")
+  services    services @relation(fields: [service_id], references: [service_id], onUpdate: Restrict, map: "services_location_ibfk_1")
+  location    location @relation(fields: [location_id], references: [location_id], onUpdate: Restrict, map: "services_location_ibfk_2")
 
   @@id([service_id, location_id])
   @@index([location_id], map: "location_id")
@@ -179,8 +182,8 @@ model services_location {
 model user_promotions {
   user_id      Int
   promotion_id Int
-  users        users      @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "user_promotions_ibfk_1")
-  promotions   promotions @relation(fields: [promotion_id], references: [promotion_id], onDelete: NoAction, onUpdate: NoAction, map: "user_promotions_ibfk_2")
+  users        users      @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "user_promotions_ibfk_1")
+  promotions   promotions @relation(fields: [promotion_id], references: [promotion_id], onUpdate: Restrict, map: "user_promotions_ibfk_2")
 
   @@id([user_id, promotion_id])
   @@index([promotion_id], map: "promotion_id")
@@ -196,8 +199,8 @@ model category {
 model services_category {
   service_id  Int
   category_id Int
-  services    services @relation(fields: [service_id], references: [service_id], onDelete: NoAction, onUpdate: NoAction, map: "services_category_ibfk_1")
-  category    category @relation(fields: [category_id], references: [category_id], onDelete: NoAction, onUpdate: NoAction, map: "services_category_ibfk_2")
+  services    services @relation(fields: [service_id], references: [service_id], onUpdate: Restrict, map: "services_category_ibfk_1")
+  category    category @relation(fields: [category_id], references: [category_id], onUpdate: Restrict, map: "services_category_ibfk_2")
 
   @@id([service_id, category_id])
   @@index([category_id], map: "category_id")

@@ -2,6 +2,7 @@
 'use client'
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function Register() {
   const [formData, setFormData] = useState({ firstName:'',lastName:'', username:'', email:'', password:'',passwordAgain:'', phoneNumber:'' });
@@ -23,10 +24,10 @@ export default function Register() {
       });
 
       const data = await response.json();
-      console.log(data)
+      
       if (!response.ok) throw new Error(data.error);
 
-      setSuccess('Regisztráció sikeres!');
+      setSuccess('Successful registration!');
       setError(null);
       setFormData({ firstName:'',lastName:'', username:'', email:'', password:'',passwordAgain:'', phoneNumber:'' });
     } catch (error) {
@@ -37,16 +38,23 @@ export default function Register() {
   };
 
   return (
-    <div className="container">
-      <h1>Regisztráció</h1>
+    <div className="flex justify-center items-center h-screen w-fill">
+      <div className=" flex justify-center items-center w-1/4 h-screen bg-indigo-500 flex-col text-white px-4">
+      <p className="text-5xl font-bold justify-center items-center text-center leading-relaxed">Already have an account?</p>
+      <p className="text-center leading-relaxed">Sign in and continue browsing</p>
+      <Link href="/api/auth/signin"><div className="bg-white text-black px-10 py-4 rounded-3xl mt-4">Sign In</div></Link>
+    </div>
+
+    <div className="flex justify-center items-center  w-3/4 flex-col ">
+    <h1 className="text-5xl font-bold">Sign Up</h1>
       
-      <form onSubmit={handleSubmit} className="form">
+      <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center ">
       <input
           type="text"
           placeholder="Username"
           value={formData.username}
           onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-          className="input"
+          className="rounded-3xl border-2 py-2 pr-64   pl-4 mb-2 mt-10 bg-indigo-100 placeholder-black"
           required
         />
         <input
@@ -54,7 +62,7 @@ export default function Register() {
           placeholder="First Name"
           value={formData.firstName}
           onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-          className="input"
+          className="rounded-3xl border-2 py-2 pr-64  pl-4 my-2 bg-indigo-100 placeholder-black"
           required
         />
          <input
@@ -62,7 +70,7 @@ export default function Register() {
           placeholder="Last Name"
           value={formData.lastName}
           onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-          className="input"
+          className="rounded-3xl border-2 py-2 pr-64  pl-4 my-2 bg-indigo-100 placeholder-black"
           required
         />
         <input
@@ -70,7 +78,7 @@ export default function Register() {
           placeholder="Email"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          className="input"
+          className="rounded-3xl border-2 py-2 pr-64  pl-4 my-2 bg-indigo-100 placeholder-black"
           required
         />
         <input
@@ -78,7 +86,7 @@ export default function Register() {
           placeholder="Password"
           value={formData.password}
           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          className="input"
+          className="rounded-3xl border-2 py-2 pr-64  pl-4 my-2 bg-indigo-100 placeholder-black"
           required
         />
         <input
@@ -86,7 +94,7 @@ export default function Register() {
           placeholder="Password again"
           value={formData.passwordAgain}
           onChange={(e) => setFormData({ ...formData, passwordAgain: e.target.value })}
-          className="input"
+          className="rounded-3xl border-2 py-2 pr-64  pl-4 my-2 bg-indigo-100 placeholder-black"
           required
         />
         <input
@@ -94,59 +102,13 @@ export default function Register() {
           placeholder="Phone number"
           value={formData.phoneNumber}
           onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-          className="input"
+          className="rounded-3xl border-2 py-2 pr-64  pl-4 my-2 bg-indigo-100 placeholder-black"
           required
         />
-        <button type="submit" className="button">Regisztráció</button>
+        <button type="submit" className="bg-indigo-500 text-white rounded-3xl py-2 px-10 mt-10">Register</button>
       </form>
-
-      <style jsx>{`
-        .container {
-          max-width: 400px;
-          margin: 0 auto;
-          padding: 20px;
-          border: 1px solid #ddd;
-          border-radius: 8px;
-          background: #f9f9f9;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-          text-align: center;
-          color: #333;
-        }
-        .error {
-          color: red;
-          text-align: center;
-        }
-        .success {
-          color: green;
-          text-align: center;
-        }
-        .form {
-          display: flex;
-          flex-direction: column;
-        }
-        .input {
-          margin-bottom: 15px;
-          padding: 10px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          font-size: 16px;
-        }
-        .button {
-          padding: 10px;
-          background: #0070f3;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          font-size: 16px;
-          cursor: pointer;
-          transition: background 0.3s ease;
-        }
-        .button:hover {
-          background: #005bb5;
-        }
-      `}</style>
+      </div>
+     {error && <div>{error}</div>}
     </div>
   );
 }

@@ -7,11 +7,11 @@ const BookingModal = ({ isOpen, onClose, children }) => {
     <div
       id="modal-overlay"
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      onClick={onClose} // Ha rákattintunk a háttérre, zárja be a modált
+      onClick={onClose} // closing modal
     >
       <div
         className="relative bg-white p-6 rounded-lg shadow-lg max-w-md w-[600px] h-[600px]"
-        onClick={(e) => e.stopPropagation()} // Megakadályozza a bezárást, ha a modalra kattintunk
+        onClick={(e) => e.stopPropagation()} // will stop closing if we click on the modal
       >
         <button
           onClick={onClose}

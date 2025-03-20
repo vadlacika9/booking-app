@@ -7,40 +7,47 @@ import "aos/dist/aos.css";
 import HeroSection from "../components/HeroSection";
 import RecommendedSection from "../components/RecomendedSection";
 import Slidein from "@/components/Slide-in";
+import Footer from "@/components/Footer";
 
 
 
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState(null);
+  const [error, setError] = useState(null)
 
 
   useEffect(() => {
     AOS.init({
-      duration: 1000 // Animáció időtartama (ms)
+      duration: 1000 
     });
+
   },[])
 
 
   useEffect(() => {
-   
+    
     const fetchSession = async () => {
       try {
         setLoading(true);
         const sessionData = await getSession();
         setSession(sessionData);
       } catch (error) {
-        console.error("Error fetching session:", error);
+        setError(error)
       } finally {
         setLoading(false);
       }
     };
 
     fetchSession();
+
   }, []);
 
-
-
+  useEffect(() => {
+    if(session){
+      console.log(session)
+    }
+  },[session])
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -54,7 +61,8 @@ export default function App() {
       <HeroSection />
       <RecommendedSection />
       <Slidein/>
-      
+      <Footer/>
+      {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
     </div>
   );
 }

@@ -3,21 +3,24 @@
 import { useState, useEffect } from "react"
 import ServiceCard from "./ServiceCard";
 import Link from "next/link";
+import Image from "next/image";
+import Loading from "./Loading";
 
 export default function MyServices(){
   const [myServices, setMyServices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   
   const handleDelete = async (service_id, location_id, duration_id, image_id) => {
     if (!confirm("Are you sure you want to delete this service?")) return;
   
     try {
-      // A body JSON formátumban
+      
       const response = await fetch(`/api/delete-service/${service_id}`, {
         method: "DELETE",
         headers: {
-          'Content-Type': 'application/json', // Jelzi, hogy JSON adatot küldünk
+          'Content-Type': 'application/json', 
         },
         body: JSON.stringify({
           service_id: service_id,
@@ -55,7 +58,7 @@ export default function MyServices(){
         const data = await getMyServices.json();
         setMyServices(data);
       }catch(error){
-        console.log(error);
+        setError(error);
       }finally{
         setLoading(false);
       }
@@ -65,14 +68,9 @@ export default function MyServices(){
   },[])
 
   if(loading){
-    return (
-      <div>
-        <p>Loading...</p>
-      </div>
-    )
+    return <Loading/>
   }
 
-    console.log(myServices)
   return(
     <div>
       <p className="pl-10 font-semibold text-gray-800 text-3xl ">My Services</p>
@@ -90,18 +88,18 @@ export default function MyServices(){
       location={service.location}
     />
 
-    <div className="flex-grow"> {/* Ezzel biztosítjuk, hogy a többi elem a kártya alján legyen, és a kártyák egységes magasságúak maradjanak */}
+    <div className="flex-grow"> 
     </div>
 
     <div className="flex justify-center items-center gap-4 mt-4">
       <div className="text-white hover:text-gray-300 flex items-center space-x-2 cursor-pointer">
-        <img src="/icons/trash.svg" alt="Trash Icon" width="25" height="25" onClick={() => handleDelete(service.service_id, service.location.location_id, service.duration_id, service.images.image_id)} />
+        <Image src="/icons/trash.svg" alt="Trash Icon" width="25" height="25" onClick={() => handleDelete(service.service_id, service.location.location_id, service.duration_id, service.images.image_id)} />
       </div>
       <Link href={`/update-service?id=${service.service_id}`} className="text-white hover:text-gray-300 flex items-center space-x-2">
-        <img src="/icons/pencil.svg" alt="Edit Icon" width="25" height="25" />
+        <Image src="/icons/pencil.svg" alt="Edit Icon" width="25" height="25" />
       </Link>
       <Link href={`/bookings/${service.service_id}?name=${service.service_name}`} className="text-white hover:text-gray-300 flex items-center space-x-2">
-        <img src="/icons/calendar.svg" alt="Calendar Icon" width="25" height="25" />
+        <Image src="/icons/calendar.svg" alt="Calendar Icon" width="25" height="25" />
       </Link>
     </div>
   </div>
@@ -110,6 +108,7 @@ export default function MyServices(){
               
             </div>
           </div>
+          {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
     </div>
   )
 }

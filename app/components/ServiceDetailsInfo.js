@@ -1,18 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-
 const ServiceDetailsInfo = ({ service }) => {
-
-
-  const [loading, setLoading] = useState(true);
-
-  const { data: session, status } = useSession();
-
-  
-
-  //if (loading) return <div>Loading...</div>;
   
   if (!service) return <div>No service details available</div>;
 

@@ -1,14 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import Image from 'next/image';
+import { getInitial } from '@/utils/getInitials';
 
 export default function OtherNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const {data: session, status} = useSession();
   
+ 
   
   return (
     
@@ -24,7 +25,9 @@ export default function OtherNavbar() {
        
         {status === 'authenticated' && (
             <Link href="/account" className="text-white hover:text-gray-300 flex items-center space-x-2">
-              <Image src="/icons/User.svg" alt="User Icon" width="25" height="25" />
+              <div className="w-9 h-9 flex items-center justify-center bg-indigo-500 text-white font-bold text-xl rounded-full">
+              {getInitial(session.user.last_name)}
+              </div>
               <span>Profile</span>
             </Link>
           )}
@@ -59,13 +62,25 @@ export default function OtherNavbar() {
 
       {/* Mobile Menu (dropdown) */}
       {isOpen && (
-        <div className="md:hidden bg-blue-500">
-          <Link href="/" className="block text-white py-2 px-4 hover:bg-blue-600">Home</Link>
-          <Link href="/about" className="block text-white py-2 px-4 hover:bg-blue-600">About</Link>
-          <Link href="/services" className="block text-white py-2 px-4 hover:bg-blue-600">Services</Link>
-          <Link href="/contact" className="block text-white py-2 px-4 hover:bg-blue-600">Contact</Link>
-        </div>
-      )}
+  <div className="absolute top-0 left-0 w-full bg-black md:hidden shadow-lg p-4 flex flex-col">
+    {/* Close button */}
+    <button 
+      className="absolute top-4 right-4 text-white text-xl"
+      onClick={() => setIsOpen(false)}
+    >
+      ✕
+    </button>
+
+    {/* Menu items */}
+    
+    <Link href="/account" className="block text-white py-3 px-6 mr-10 hover:bg-gray-800">
+      Profile
+    </Link>
+    <Link href="/add-service" className="block text-white py-3 px-6 mr-10 hover:bg-gray-800">
+      Add your Service
+    </Link>
+  </div>
+)}
     </nav>
   );
 }

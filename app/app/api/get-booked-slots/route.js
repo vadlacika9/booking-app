@@ -6,7 +6,7 @@ export async function GET(req) {
   const date = searchParams.get("date");
   const serviceId = searchParams.get("serviceId");
 
-  // Paraméterek validálása
+  
   if (!date || !serviceId) {
     return new Response(
       JSON.stringify({ error: "Missing required parameters: date or serviceId" }),
@@ -15,26 +15,26 @@ export async function GET(req) {
   }
 
   try {
-    // Lekérdezzük az adatokat a Prisma segítségével
+
     const bookedSlots = await db.duration.findMany({
       where: {
         booking_day: date,
-        service_id: parseInt(serviceId), // Érdemes a serviceId-t számként kezelni
+        service_id: parseInt(serviceId), 
       },
       select: {
-        start_time: true, // Csak a start_time oszlopra van szükség
+        start_time: true, 
       },
     });
 
-    // Ha nem találunk lekérdezés eredményt
+
     if (!bookedSlots || bookedSlots.length === 0) {
       return new Response(
-        JSON.stringify({ bookedSlots: [] }), // Ha nincs foglalt időpont
+        JSON.stringify({ bookedSlots: [] }),
         { status: 200, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    // A foglalt időpontok átalakítása és visszaküldése
+
     const formattedSlots = bookedSlots.map((slot) => slot.start_time);
     console.log(formattedSlots);
     return new Response(
@@ -49,6 +49,6 @@ export async function GET(req) {
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   } finally {
-    await db.$disconnect(); // Az adatbázis kapcsolat lezárása
+    await db.$disconnect(); 
   }
 }

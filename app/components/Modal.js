@@ -23,6 +23,7 @@ const Modal = ({service}) => {
   const [shouldDisableWeekends, setShouldDisableWeekends] = useState(false);
   const [shouldDisableToday, setShouldDisableToday] = useState(false);
   const [shouldDisableTomorrow, setShouldDisableTomorrow] = useState(false);
+  const [error,setError] = useState(null);
   
 
   const { data: session, status } = useSession();
@@ -46,7 +47,7 @@ const Modal = ({service}) => {
       }
       const data = await response.json();
       console.log(data)
-      setBookedSlots(data.bookedSlots || []); // Az adatokat mentjük, vagy üres tömböt
+      setBookedSlots(data.bookedSlots || []); 
     } catch (error) {
       console.error("Error fetching booked slots:", error);
     }
@@ -58,12 +59,11 @@ const Modal = ({service}) => {
   
     const day = date.getDay(); // 0: Sunday, 6: Saturday
   
-    // Ha shouldDisableWeekends igaz, akkor letiltjuk a hétvégéket és a múltbeli napokat
     if (shouldDisableWeekends) {
-      return day === 0 || day === 6 || date < today; // Ha hétvége vagy múltbeli nap
+      return day === 0 || day === 6 || date < today; // weekend or date from the past
     } else {
-      // Ha nem kell letiltani a hétvégéket, csak a múltbeli napokat tiltjuk
-      return date < today; // Ha múltbeli nap
+      //dates from the past
+      return date < today;
     }
   };
 
@@ -79,14 +79,14 @@ const Modal = ({service}) => {
       let minutes = String(current.getMinutes()).padStart(2, "0");
       let timeSlot = `${hours}:${minutes}`;
 
-      // Csak akkor adjuk hozzá, ha a slot nincs benne a lefoglalt időpontok között
+  
       if (!booked.includes(timeSlot)) {
         times.push(timeSlot);
       }
 
       current.setMinutes(current.getMinutes() + interval);
     }
-    return times;  // Visszaadja a szűrt időpontokat
+    return times;  //filtered times
   };
 
 
@@ -94,7 +94,7 @@ const Modal = ({service}) => {
   const generateTimeSlotsForToday = (start, end, interval, booked) => {
     let times = [];
     let current = new Date();
-    let today = current.toISOString().split("T")[0]; // Az aktuális dátum YYYY-MM-DD formátumban
+    let today = current.toISOString().split("T")[0]; 
   
     let currentSlot = new Date(`${today}T${start}:00`);
     let endTime = new Date(`${today}T${end}:00`);
@@ -105,7 +105,7 @@ const Modal = ({service}) => {
       let minutes = String(currentSlot.getMinutes()).padStart(2, "0");
       let timeSlot = `${hours}:${minutes}`;
   
-      // A timeSlot-ot is átalakítjuk Date objektummá a pontos összehasonlításhoz
+      
       let timeSlotDate = new Date(`${today}T${timeSlot}:00`);
   
       if (!booked.includes(timeSlot) && timeSlotDate > now) {
@@ -134,17 +134,17 @@ const Modal = ({service}) => {
      
       
       
-      const newDate = new Date(date); // Létrehozunk egy új Date objektumot
+      const newDate = new Date(date); 
       newDate.setDate(newDate.getDate() + 1);
       setValue(newDate);
-      fetchBookedSlots(newDate.toISOString().split("T")[0]); // API hívás az aktuális dátumhoz
+      fetchBookedSlots(newDate.toISOString().split("T")[0]); 
     setIsCalendarOpen(false);
     console.log(newDate.toISOString().split("T")[0]);
 
     }else{
       
       setValue(date);
-      fetchBookedSlots(date.toISOString().split("T")[0]); // API hívás az aktuális dátumhoz
+      fetchBookedSlots(date.toISOString().split("T")[0]);
     setIsCalendarOpen(false);
     console.log(date.toISOString().split("T")[0]);
     }
@@ -158,7 +158,7 @@ const Modal = ({service}) => {
     
     const today = new Date();
     
-    /*setValue(today);*/
+  
     setIsCalendarOpen(false);
     setIsClickedTomorrow(false)
     setIsClickedToday(true);
@@ -171,7 +171,7 @@ const Modal = ({service}) => {
     
     tomorrow.setDate(tomorrow.getDate() + 1);
     onDateChange(tomorrow)
-    /*setValue(tomorrow);*/
+   
     
     setIsCalendarOpen(false);
     setIsClickedToday(false)
@@ -193,7 +193,7 @@ const Modal = ({service}) => {
     const payload = {
       servicePrice,
       selectedSlot,
-      value: value.toISOString().split("T")[0], // Konvertálás string formátumba
+      value: value.toISOString().split("T")[0], 
       serviceId,
     };
   
@@ -212,7 +212,7 @@ const Modal = ({service}) => {
       console.log('Booking successful:', result);
       setIsModalOpen();
     } catch (error) {
-      console.error('Booking error:', error);
+      setError(error)
     }
   };
 
@@ -273,7 +273,7 @@ const Modal = ({service}) => {
   }, [isModalOpen]);
   
 
-  //EZT AT KELL ALAKITANI DINAMIKUSSA
+
 
 
 
@@ -285,7 +285,7 @@ const Modal = ({service}) => {
         <p className="mt-4 text-center">Select a date:</p>
         {isCalendarOpen && (
   <div className="flex flex-col items-start justify-center absolute inset-0 -top-32 z-10">
-    {/* Kék sáv a gombbal */}
+    
     <div className="bg-blue-500 w-full p-2 flex items-center justify-between">
       <button 
         onClick={toggleCalendar} 
@@ -295,24 +295,17 @@ const Modal = ({service}) => {
       </button>
     </div>
 
-    {/* Naptár középre helyezése */}
+    {/* Calendar */}
     <div className="w-full flex justify-center bg-white p-4">
       <Calendar
-        onChange={(date) => onDateChange(date, "other")} // Dátum kezelése
+        onChange={(date) => onDateChange(date, "other")} 
         tileDisabled={disablePastAndWeekends}
-        className="bg-white shadow-lg w-full " // Maximális szélesség beállítása
+        className="bg-white shadow-lg w-full " 
       />
     </div>
   </div>
 )}
-
-
-
-        
-        
-        
-        
-        <div className="flex justify-center gap-x-4 mt-4">
+  <div className="flex justify-center gap-x-4 mt-4">
         <button
   className={`h-[45px] w-[80px] flex items-center justify-center rounded-lg border text-black transition-all duration-300
     ${isClickedToday ? "bg-blue-500 text-white" : "bg-transparent"}
@@ -340,7 +333,7 @@ const Modal = ({service}) => {
 
           <button
             className="h-[45px] w-[100px] flex items-center justify-center rounded-lg border text-black"
-            onClick={toggleCalendar} // Naptár megnyitása/zárása
+            onClick={toggleCalendar} 
           >
             Other Date
           </button>
@@ -357,7 +350,7 @@ const Modal = ({service}) => {
         .map((slot, index) => (
           <div
             key={index}
-            onClick={() => setSelectedSlot(slot)} // Kiválasztás esemény
+            onClick={() => setSelectedSlot(slot)} 
             className={`min-w-[100px] flex items-center justify-center p-2 shadow rounded-lg cursor-pointer
               ${selectedSlot === slot ? 'bg-blue-500 text-white' : 'text-black'}`}
           >
@@ -397,7 +390,9 @@ const Modal = ({service}) => {
         
     
       </BookingModal>
+      {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
     </div>
+
   );
 };
 

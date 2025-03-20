@@ -53,5 +53,7 @@ export async function POST(req){
       JSON.stringify({ error: error.message }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
     )
+  }finally{
+    await db.$disconnect();
   }
 }

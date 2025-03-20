@@ -1,26 +1,60 @@
+'use client'
 import Image from "next/image";
+import { useEffect, useState } from "react";
+
 
 const Slidein = () => {
+
+  const [isVisible, setIsVisible] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if(localStorage.getItem("userLocation")){
+      setIsVisible(false);
+    }
+  })
+const saveUserLocation = () => {
+  if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        localStorage.setItem("userLocation", JSON.stringify({ lat, lng }));
+
+        
+        setIsVisible(false)
+        window.location.reload();
+      },
+      (error) => {
+        console.error("error:", error);
+      }
+    );
+  } else {
+    console.log("error");
+  }
+};
+
   return(
     <div className="px-4 md:px-8 py-10 mt-16 max-w-7xl mx-auto">
 
-<div className="flex items-center justify-center">
+{isVisible && (<div className="flex items-center justify-center">
   <div data-aos="fade-up" className="w-full p-6 rounded-lg border-2 shadow-md flex justify-between items-center mb-24">
     <div>
       <p className="text-2xl mx-4 font-bold text-gray-700">Discover the nearest available services.</p>
       <p className="mx-4 text-gray-700">Please enable location services in your browser to find nearby options.</p>
-      <button className="text-white bg-indigo-500 p-4 ml-4 font-bold rounded-lg">Enable</button>
-      <button className="p-4 my-4 ml-2 border-2 rounded border-indigo-500 text-indigo-500 font-bold">Not now</button>
+      <button className="text-white bg-indigo-500 p-4 ml-4 font-bold rounded-lg" onClick={saveUserLocation}>Enable</button>
+      <button className="p-4 my-4 ml-2 border-2 rounded border-indigo-500 text-indigo-500 font-bold " onClick={() => {setIsVisible(false)}}>Not now</button>
     </div>
     <div className="flex justify-end pr-24">
       <Image src="/images/undraw_destination_fkst.svg" width={200} height={200} alt="phone" />
     </div>
   </div>
 </div>
-
+)}
       {/* Flexbox container */}
       <div className="flex flex-col md:flex-row items-stretch mt-10 gap-6">
-        {/* Bal oldali kép (balról csúszik be) */}
+        {/* Left image */}
         <div data-aos="fade-right" className="w-full md:w-1/2 flex justify-center items-center pr-10">
           <Image
             src="/images/kep2.jpg"
@@ -31,7 +65,7 @@ const Slidein = () => {
           />
         </div>
 
-        {/* Jobb oldali szöveg (jobbról csúszik be) */}
+        {/* right text */}
         <div data-aos="fade-left" className="w-full md:w-1/2">
         <h1 className="text-3xl pb-14"><strong>The Advantages of Online Booking</strong></h1>
           <p className="text-lg">
@@ -50,7 +84,7 @@ Time-Saving: With online booking, theres no need to make phone calls or visit a 
       {/* Flexbox container */}
       <div className="flex flex-col md:flex-row items-stretch mt-40 gap-6">
 
-        {/* Jobb oldali szöveg (jobbról csúszik be) */}
+        {/* right text */}
         <div data-aos="fade-right" className="w-full md:w-1/2">
         <h1 className="text-3xl pb-14"><strong>The Advantages of Online Booking</strong></h1>
           <p className="text-lg">
@@ -64,7 +98,7 @@ Time-Saving: With online booking, theres no need to make phone calls or visit a 
           </p>
          
         </div>
-        {/* Bal oldali kép (balról csúszik be) */}
+        {/* left image */}
         <div data-aos="fade-left" className="w-full md:w-1/2 flex justify-center items-center pr-10">
           <Image
             src="/images/massage.jpg"
@@ -76,7 +110,7 @@ Time-Saving: With online booking, theres no need to make phone calls or visit a 
         </div>
       </div>
       <div className="flex flex-col md:flex-row items-stretch mt-40 gap-6">
-        {/* Bal oldali kép (balról csúszik be) */}
+        {/* left image */}
         <div data-aos="fade-right" className="w-full md:w-1/2 flex justify-center items-center pr-10">
           <Image
             src="/images/my_app.svg"
@@ -87,7 +121,7 @@ Time-Saving: With online booking, theres no need to make phone calls or visit a 
           />
         </div>
 
-        {/* Jobb oldali szöveg (jobbról csúszik be) */}
+        {/* right text */}
         <div data-aos="fade-left" className="w-full md:w-1/2">
 
         <h1 className="text-3xl pb-14"><strong> IOS & Android application</strong></h1>
@@ -96,7 +130,9 @@ Time-Saving: With online booking, theres no need to make phone calls or visit a 
           </p>
          
         </div>
-        
+        {error && (
+          <div>{error}</div>
+        )}
       </div>
     </div>
 

@@ -12,14 +12,14 @@ export async function GET() {
   try {
     const myServices = await db.services.findMany({
       where: {
-        user_id: parseInt(id), // Felhasználó azonosító alapján keres
+        user_id: parseInt(id), 
       },
       include: {
-        duration: true, // A szolgáltatás időtartamának adatainak lekérése
-        images: true, // A szolgáltatáshoz tartozó képek
+        duration: true, 
+        images: true, 
         services_location: {
           include: {
-            location: true, // Helyszínhez tartozó adatok
+            location: true, 
           }
         }
       }
@@ -28,29 +28,29 @@ export async function GET() {
     if (!myServices || myServices.length === 0) {
       return new Response(
         JSON.stringify({ error: "Service not found" }),
-        { status: 404 } // Ha nincs találat
+        { status: 404 } 
       );
     }
 
-    // Az adatokat formázásra kerülnek az általad kívánt struktúrával
+ 
     const servicesWithFormattedData = myServices.map((service) => ({
       service_id: service.service_id,
       user_id: service.user_id,
       service_name: service.name,
       service_description: service.description,
       service_price: service.price,
-      // Az időtartam adatai
+  
       duration_id: service.duration[0]?.duration_id,
       duration_start_time: service.duration[0]?.start_time,
       duration_end_time: service.duration[0]?.end_time,
-      // Képek (ha vannak)
+
       images : {image_id: service.images.length > 0 ? service.images[0].image_id : null,
       images: service.images.length > 0
-        ? service.images.map((img) => img.path) // Tömbben az összes kép URL
+        ? service.images.map((img) => img.path) 
         : [
-            'https://ceouekx9cbptssme.public.blob.vercel-storage.com/default-oCOnxEAVLnQCAxCIb9R87WUp5jLrTP.png', // Alapértelmezett kép URL
+            'https://ceouekx9cbptssme.public.blob.vercel-storage.com/default-oCOnxEAVLnQCAxCIb9R87WUp5jLrTP.png', 
           ],},
-      // A helyszíni adatokat egyetlen "location" objektumban összesítve
+   
       location: {
         location_id: service.services_location[0]?.location?.location_id,
         postal_code: service.services_location[0]?.location?.postal_code,
@@ -70,6 +70,8 @@ export async function GET() {
       JSON.stringify({ error: error.message }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
+  }finally{
+    await db.$disconnect();
   }
 
 }

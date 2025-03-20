@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useRef, useEffect } from "react";
-import Navbar from "@/components/Navbar";
 import { useRouter } from 'next/navigation';
 import { useSession } from "next-auth/react";
-
+import counties from "@/utils/counties";
+import { filterLocations } from "@/utils/counties";
 
 const AddService = () => {
 
@@ -12,7 +12,7 @@ const AddService = () => {
   const router = useRouter();
   const [serviceName, setServiceName] = useState('');
   const [serviceDesc, setServiceDesc] = useState('');
-  const [servicePrice,setServicePrice] = useState(0);
+  const [servicePrice,setServicePrice] = useState('');
   const [serviceCounty, setServiceCounty] = useState('');
   const [serviceCity, setServiceCity] = useState('');
   const [serviceAddress, setServiceAddress] = useState('');
@@ -20,17 +20,78 @@ const AddService = () => {
   const [message, setMessage] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [availableDays, setAvailableDays] = useState('');
-  
-  useEffect(() => {
+  const [availableDays, setAvailableDays] = useState('Weekdays only');
+  const [step, setStep] = useState(1);
+  const [categories, setCategories] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const inputFileRef = useRef(null);
+  const [blob, setBlob] = useState(null);
+  const [error, setError] = useState(null);
+  const [locations, setLocations] = useState([]);
+  const [selectedCounty, setSelectedCounty] = useState('');
+    const [selectedTown, setSelectedTown] = useState('');
+
+  useEffect(() => { //checking if the user is authenticated
     if (status === 'unauthenticated') {
       router.push('/api/auth/signin');
     }
   }, [status, router]);
   
 
-   const inputFileRef = useRef(null);
-    const [blob, setBlob] = useState(null);
+  useEffect(() => { //fetching categories
+    const getCategories = async () => {
+      try{
+        const fetchCategories = await fetch('/api/get-categories');
+        const response = await fetchCategories.json();
+        setCategories(response);
+      }catch(error){
+        console.log(error);
+      }
+    }
+
+    getCategories()
+
+    
+  },[session])
+
+  const handleSelectChange = (event) => {
+    const countyCode = event.target.value;
+    console.log(countyCode)
+    setServiceCounty(countyCode)
+    setSelectedCounty(countyCode);
+    // after select calling the getTownsInCounty function
+    if (countyCode) {
+      getTownsInCounty(countyCode);
+    } else {
+      setLocations([]);  // If no towns in tha county the Locations are []
+    }
+  };
+
+  const handleTownChange = (event) => {
+    setSelectedTown(event.target.value);
+    setServiceCity(event.target.value) // updating the selected city
+  };
+
+  const getTownsInCounty = async (code) => {
+
+      try {
+        const response = await fetch(`http://api.geonames.org/searchJSON?q=RO-${code}&country=RO&maxRows=1000&username=${process.env.NEXT_PUBLIC_GEO_USERNAME}`);
+        if (!response.ok) {
+          setError(response.status)
+          return;
+        }
+        
+        const data = await response.json();
+        
+        // filtering
+        const filteredLocations = await filterLocations(data);
+    
+        setLocations(filteredLocations);
+      } catch (error) {
+        setError(error);
+      }
+    };
 
   async function handleSubmit(event){
     event.preventDefault();
@@ -39,6 +100,13 @@ const AddService = () => {
       const file = inputFileRef.current.files[0];
       if (!file) throw new Error("No file selected.");
 
+      if(file){
+        const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+        if (!allowedTypes.includes(file.type)) {
+          setError("❌ Invalid file type. Please upload an image (JPG, PNG, GIF, WEBP).");
+          return;
+      }
+    }
       const responseImage = await fetch(
         `/api/upload?filename=${file.name}`,
         {
@@ -54,13 +122,10 @@ const AddService = () => {
       
       const imageUrl =  uploadedImage.url;
       
-      
-   
-
       const response = await fetch('api/add-service',{
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ serviceName,serviceDesc,servicePrice,serviceCounty,serviceCity,serviceAddress,servicePostal,image: imageUrl,startTime,endTime, availableDays })
+        body: JSON.stringify({ serviceName,serviceDesc,servicePrice,serviceCounty,serviceCity,serviceAddress,servicePostal,image: imageUrl,startTime,endTime, availableDays, phoneNumber, selectedCategory })
       });
 
       if(!response.ok){
@@ -75,7 +140,7 @@ const AddService = () => {
       router.push('/')
       
     }catch(error){
-      console.log(error);
+      setError(error)
     }
 
     
@@ -84,166 +149,103 @@ const AddService = () => {
 
 
   return (
-    
-    <div className="flex items-center justify-center h-full bg-gray-100">
-      <div className="bg-white shadow-md rounded px-8 py-6 mb-10 w-96 mt-20">
-        <h1 className="text-2xl font-bold mb-6 text-center">Add Service</h1>
-        <form  onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="service_name" className="block text-gray-700 text-sm font-bold mb-2">
-              Service name
-            </label>
-            <input
-              type="text"
-              value={serviceName}
-              id="service_name"
-              onChange={(e) => setServiceName(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
+    <div className='flex items-center justify-center h-full bg-gray-100'>
+      <div className='bg-white shadow-md rounded-3xl px-8 py-6 mb-10 w-96 mt-20'>
+        <h1 className='text-2xl font-bold mb-6 text-center'>Service details</h1>
+        <form onSubmit={handleSubmit}>
+          {step === 1 && (
+            <div className="flex flex-col">
+              <h1 className="p-4 font-bold text-lg">Basic informations</h1>
+              
+              <input className="bg-indigo-50 rounded-full p-4 mb-4" value={serviceName} onChange={(e) => setServiceName(e.target.value)} required placeholder="Service name"/>
+             
+              <input className="bg-indigo-50 rounded-full p-4 mb-4" value={serviceDesc} onChange={(e) => setServiceDesc(e.target.value)} required placeholder="Description"/>
+
+              <input className="bg-indigo-50 rounded-full p-4 mb-4" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} required placeholder="Phone Number"/>
+             
+              <input className="bg-indigo-50 rounded-full p-4 mb-4" type='number' value={servicePrice} onChange={(e) => setServicePrice(e.target.value)} required placeholder="Price/hour"/>
+
+            </div>
+          )}
+          {step ===2 && (
+            <div>
+            <h1 className="p-4 font-bold text-lg">Category</h1>
+            <div className="grid grid-cols-3 gap-4">
+            {categories.map((cat, index) => (
+              <div
+                onClick={() => setSelectedCategory(cat.category_id)}
+                key={index}
+                className={`p-4 text-center cursor-pointer rounded-full flex justify-center items-center
+                  ${selectedCategory === cat.category_id ? 'bg-indigo-600 text-white' : 'bg-indigo-300 text-white'}`}
+              >
+                {cat.name}
+              </div>
+            ))}
           </div>
-          <div className="mb-4">
-            <label htmlFor="service_description" className="block text-gray-700 text-sm font-bold mb-2">
-              Service description
-            </label>
-            <input
-              type="text"
-              id="service_description"
-              value={serviceDesc}
-              onChange={(e) => setServiceDesc(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
           </div>
-          <div className="mb-4">
-            <label htmlFor="service_price_per_hour" className="block text-gray-700 text-sm font-bold mb-2">
-              Price
-            </label>
-            <input
-              type="number"
-              id="service_price_per_hour"
-              value={servicePrice}
-              onChange={(e) => setServicePrice(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="service_county" className="block text-gray-700 text-sm font-bold mb-2">
-              County
-            </label>
-            <input
-              type="text"
-              id="service_county"
-              value={serviceCounty}
-              onChange={(e) => setServiceCounty(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="service_city" className="block text-gray-700 text-sm font-bold mb-2">
-              City
-            </label>
-            <input
-              type="text"
-              id="service_city"
-              value={serviceCity}
-              onChange={(e) => setServiceCity(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
-          </div>
-          <div className="mb-6">
-            <label htmlFor="service_address" className="block text-gray-700 text-sm font-bold mb-2">
-              Service Address
-            </label>
-            <input
-              type="text"
-              id="service_address"
-              value={serviceAddress}
-              onChange={(e) => setServiceAddress(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
-          </div>
-          <div className="mb-6">
-            <label htmlFor="service_postal_code" className="block text-gray-700 text-sm font-bold mb-2">
-              Postal Code
-            </label>
-            <input
-              type="text"
-              id="service_postal_code"
-              value={servicePostal}
-              onChange={(e) => setServicePostal(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
-          </div>
-          <div className="mb-6">
-          <label htmlFor="image" className="block text-gray-700 text-sm font-bold mb-2">
-              Image
-            </label>
-          <input id="image" ref={inputFileRef} type="file" />
-          </div>
-          <div className="mb-6">
-            <label htmlFor="service_start_time" className="block text-gray-700 text-sm font-bold mb-2">
-              Start time
-            </label>
-            <input
-              type="time"
-              id="service_start_time"
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
-          </div>
-          <div className="mb-6">
-            <label htmlFor="service_end_time" className="block text-gray-700 text-sm font-bold mb-2">
-              End time
-            </label>
-            <input
-              type="time"
-              id="service_end_time"
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
-          </div>
-          <div className="mb-6">
-            <label htmlFor="days_available" className="block text-gray-700 text-sm font-bold mb-2">
-              Available days
-            </label>
-            <input
-              list='options'
-              id="days_available"
-              value={availableDays}
-              onChange={(e) => setAvailableDays(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
-          </div>
-            <datalist id="options">
-                <option value="Weekdays only"/>
-                <option value="Every day"/>
-              </datalist>
-          <div className="flex items-center justify-between">
-           
-            <button
-              type="submit"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-              Add Service
-            </button>
+          )}
+          {step === 3 && (
+            <div className="flex flex-col">
+              <h1 className="p-4 font-bold text-lg">Location</h1>
+              <select className="bg-indigo-50 rounded-full p-4 mb-4" value={selectedCounty} onChange={handleSelectChange}>
+        <option value="">County</option>
+        {counties.map((county) => (
+          <option key={county.code} value={county.name}>
+            {county.name}
+          </option>
+        ))}
+      </select>
+      <select className="bg-indigo-50 rounded-full p-4 mb-4" value={selectedTown} onChange={handleTownChange}>
+        <option >City</option>
+        {locations.length > 0 ? (
+          locations.map((loc) => (
+            <option key={loc.geonameId} value={loc.name}>
+              {loc.name}
+            </option>
+          ))
+        ) : (
+          <option disabled>There are no cities in the selected county</option>
+        )}
+      </select>
+              <input className="bg-indigo-50 rounded-full p-4 mb-4" value={serviceAddress} onChange={(e) => setServiceAddress(e.target.value)} required placeholder="Address"/>
+              <input className="bg-indigo-50 rounded-full p-4 mb-4" value={servicePostal} onChange={(e) => setServicePostal(e.target.value)} required placeholder="Postal Code"/>
+            </div>
+          )}
+          {step === 4 && (
+            <div className="flex flex-col">
+              <h1 className="p-4 font-bold text-lg">Availability & Working Hours</h1>
+              <label className="pl-4">Start Time</label>
+              <input className="bg-indigo-50 rounded-full p-4 mb-4" type='time' value={startTime} onChange={(e) => setStartTime(e.target.value)} required />
+              <label className="pl-4" >End Time</label>
+              <input className="bg-indigo-50 rounded-full p-4 mb-4" type='time' value={endTime} onChange={(e) => setEndTime(e.target.value)} required/>
+              <select className='bg-indigo-50 rounded-full p-4 mb-4' value={availableDays} onChange={(e) => setAvailableDays(e.target.value)} required placeholder="Available days">
+                <option value='Weekdays only'>Weekdays only</option>
+                <option value='Every day'>Every day</option>
+              </select>
+            </div>
+          )}
+          {step === 5 && (
+            <div className="flex flex-col">
+              <h1 className="p-4 font-bold text-lg">Image for your service</h1>
+              <input className="bg-indigo-50 rounded-full p-4 mb-4" type='file' ref={inputFileRef} />
+              <button type='submit' className='bg-indigo-500 text-white px-4 py-2 rounded'>Submit</button>
+            </div>
+          )}
+          <div className='flex justify-between mt-4'>
+            {step > 1 && (
+              <button type='button' onClick={() => setStep(step - 1)} className='bg-gray-500 text-white px-4 py-2 rounded'>Back</button>
+            )}
+            {step < 5 && (
+              <button type='button' onClick={() => setStep(step + 1)} className='bg-indigo-500 text-white px-4 py-2 rounded'>Next</button>
+            )}
           </div>
         </form>
         {message && <p>{message}</p>}
+        {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
       </div>
+      
     </div>
-    
-  
-  )
+  );
 
 }
 

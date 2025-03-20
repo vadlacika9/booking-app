@@ -8,7 +8,7 @@ export default function MyAppointments() {
 
   const availableAppointments = () => {
     const now = new Date();
-    const today = now.toISOString().split("T")[0]; // Jelenlegi dátum 'YYYY-MM-DD' formátumban
+    const today = now.toISOString().split("T")[0]; 
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
   
@@ -30,7 +30,7 @@ export default function MyAppointments() {
     });
   };
   
-  // Az éppen megjelenített lista
+ 
   const displayedAppointments = showAvailable ? availableAppointments() : appointments;
 
   useEffect(() => {
@@ -67,24 +67,24 @@ export default function MyAppointments() {
     <div className="flex flex-col items-center justify-center">
     
 
-      {/* Gombok szekció */}
+      {/* buttons */}
       <div className="flex justify-center items-center gap-4 rounded-lg border-2 border-black px-4 mb-10">
         <button 
           onClick={() => setShowAvailable(false)} 
-          className={`flex-1 p-2 text-center transition-all duration-300 ${!showAvailable ? 'bg-gray-400 text-white' : 'hover:bg-gray-200'}`}
+          className={`flex-1 p-2 justifiy-center items-center transition-all duration-300 ${!showAvailable ? 'bg-indigo-500 text-white' : 'hover:bg-indigo-300'}`}
         >
           All appointments
         </button>
         <div className="h-8 border-l-2 border-gray-900"></div>
         <button 
           onClick={() => setShowAvailable(true)} 
-          className={`flex-1 p-2 text-center transition-all duration-300 ${showAvailable ? 'bg-gray-400 text-white' : 'hover:bg-gray-200'}`}
+          className={`flex-1 p-2 justifiy-center items-center  transition-all duration-300 ${showAvailable ? 'bg-indigo-500 text-white' : 'hover:bg-indigo-300'}`}
         >
           Available appointments
         </button>
       </div>
 
-      {/* Táblázat szekció */}
+      {/* table section */}
       {displayedAppointments.length > 0 ? (
       <div className="p-4">
       <table className="table-fixed w-full border-collapse">

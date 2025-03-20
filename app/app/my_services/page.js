@@ -1,7 +1,7 @@
 'use client'
 import ServiceCard from "@/components/ServiceCard";
 import { useState, useEffect } from "react";
-import Navbar from "@/components/Navbar";
+
 
 const MyServices = () => {
   const [services, setServices] = useState([]);

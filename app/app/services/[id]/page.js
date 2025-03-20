@@ -7,6 +7,9 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import Modal from '@/components/Modal';
 import Link from 'next/link';
+import Reviews from '@/components/Reviews';
+import ReviewsForm from '@/components/ReviewsForm';
+import Loading from '@/components/Loading';
 
 const ServiceDetails = () => {
   const { id } = useParams(); 
@@ -14,6 +17,7 @@ const ServiceDetails = () => {
   const [isMyService, setIsMyService] = useState(false)
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
  
 
@@ -28,7 +32,7 @@ const ServiceDetails = () => {
         const data = await getService.json();
         setService(data);
       } catch (error) {
-        console.error('Error fetching service:', error);
+        setError(error)
       } finally {
         setLoading(false);
       }
@@ -43,28 +47,26 @@ const ServiceDetails = () => {
     if (service?.user_id && session?.user?.id) {
       if (service.user_id === session.user.id) {
         setIsMyService(true);
-        console.log('Service belongs to the current user', service.user_id);
       }
     }
   }, [service, session]);
   
   
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading/>
   }
 
   if (!service) {
     return <div>Service not found!</div>;
   }
 
-  // Ellenőrizzük, hogy a `service.images` létezik-e és nem üres
   const imageUrl = service.images;
 
   return (
     <div className="container max-w-7xl mx-auto px-4 md:px-8 pt-10">
   <div className="flex items-center justify-between gap-4 relative"> {/* Add relative positioning to the parent */}
     
-    {/* Bal oldali kép */}
+    {/* Left side */}
     <div className="flex-2 flex items-center justify-center relative w-[750px] h-[500px]">
       <Image
         src={imageUrl}
@@ -75,7 +77,7 @@ const ServiceDetails = () => {
       />
     </div>
     
-    {/* Jobb oldali információs panel */}
+    {/* Right side */}
     <div className="flex-1 px-10">
       <ServiceDetailsInfo service={service} />
       <div className="pt-10">
@@ -94,10 +96,12 @@ const ServiceDetails = () => {
       )}
     </div>
   </div>
-  <div className="reviews pt-10">
+  <div className="w-7/12 pt-10">
     <h2 className="font-bold text-gray-700 text-2xl">Reviews</h2>
-    <div>There are no reviews</div>
+    <ReviewsForm id = {id}/>
+    <Reviews id={id}/>
   </div>
+  {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
 </div>
 
   );

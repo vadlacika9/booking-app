@@ -6,7 +6,7 @@ import Link from 'next/link';
 export default function Hero() {
   return (
     <section className="relative h-[34rem] flex flex-col text-center text-white">
-      {/* Háttérvideó */}
+      {/* background video */}
       <video 
         autoPlay 
         loop 
@@ -18,7 +18,7 @@ export default function Hero() {
         Your browser does not support the video tag.
       </video>
 
-      {/* Sötét overlay a jobb olvashatóságért */}
+      {/* dark overlay */}
       <div className="absolute top-0 left-0 w-full h-full bg-black/50"></div>
 
       {/* Navbar */}
@@ -26,7 +26,7 @@ export default function Hero() {
         <Navbar />
       </div>
 
-      {/* Tartalom */}
+      {/* Content */}
       <div className="relative z-10 flex-grow flex flex-col items-center justify-center">
         <h1 className="text-4xl font-bold mb-4">Glow up with just a click</h1>
         <p className="text-lg mb-6">find top professionals and book instantly.</p>

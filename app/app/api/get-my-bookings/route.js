@@ -15,12 +15,12 @@ export async function GET(){
       include: {
         bookings: {
           include: {
-            duration: true, // Mivel a `duration` a `bookings`-hoz tartozik, itt kell lennie
+            duration: true, 
             services: {
               include: {
-                services_location: { // Kapcsolótábla lekérése
+                services_location: { 
                   include: {
-                    location: true, // Hozzá tartozó helyszín betöltése
+                    location: true, 
                   },
                 },
               },
@@ -65,6 +65,8 @@ export async function GET(){
   }catch(error){
     JSON.stringify({ error: error.message }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
+  }finally{
+    await db.$disconnect();
   }
 
 }

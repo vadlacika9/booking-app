@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import { getInitial } from '@/utils/getInitials';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,11 +30,23 @@ export default function Navbar() {
           <Link href="/">MyLogo</Link>
         </div>
 
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="md:hidden text-white focus:outline-none"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
+          </svg>
+        </button>
+
         {/* Menu Items (desktop) */}
         <div className="hidden md:flex space-x-6">
           {status === 'authenticated' && (
             <Link href="/account" className="text-white hover:text-gray-300 flex items-center space-x-2">
-              <img src="/icons/userIcon.svg" alt="User Icon" width="25" height="25" />
+              <div className="w-9 h-9 flex items-center justify-center bg-indigo-500 text-white font-bold text-xl rounded-full">
+                {getInitial(session.user.last_name)}
+              </div>
               <span>Profile</span>
             </Link>
           )}
@@ -49,37 +62,30 @@ export default function Navbar() {
             Add your Service
           </Link>
         </div>
-
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-white focus:outline-none"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
-          </svg>
-        </button>
       </div>
 
       {/* Mobile Menu (dropdown) */}
-      <div
-        className={`md:hidden bg-black transition-all overflow-hidden ${
-          isOpen ? "max-h-96" : "max-h-0"
-        }`}
-      >
-        <Link href="/" className="block text-white py-3 px-6 hover:bg-gray-800">
-          Home
-        </Link>
-        <Link href="/about" className="block text-white py-3 px-6 hover:bg-gray-800">
-          About
-        </Link>
-        <Link href="/services" className="block text-white py-3 px-6 hover:bg-gray-800">
-          Services
-        </Link>
-        <Link href="/contact" className="block text-white py-3 px-6 hover:bg-gray-800">
-          Contact
-        </Link>
-      </div>
+      {isOpen && (
+  <div className="absolute top-0 left-0 w-full bg-black md:hidden shadow-lg p-4 flex flex-col">
+    {/* Close button */}
+    <button 
+      className="absolute top-4 right-4 text-white text-xl"
+      onClick={() => setIsOpen(false)}
+    >
+      ✕
+    </button>
+
+    {/* Menu items */}
+    
+    <Link href="/account" className="block text-white py-3 px-6 mr-10 hover:bg-gray-800">
+      Profile
+    </Link>
+    <Link href="/add-service" className="block text-white py-3 px-6 mr-10 hover:bg-gray-800">
+      Add your Service
+    </Link>
+  </div>
+)}
+
     </nav>
   );
 }
