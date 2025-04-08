@@ -2,12 +2,13 @@
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
-
+import { sendEmail } from "@/utils/mailer";
 
 export async function POST(request) {
   const db = new PrismaClient();
    const session = await getServerSession(authOptions);
    const userId = session.user.id;
+   const email = session.user.email;
   try {
     const body = await request.json();
     const { serviceName, serviceDesc, servicePrice, serviceCounty, serviceCity, serviceAddress, servicePostal, image, startTime, endTime, availableDays ,phoneNumber, selectedCategory} = body;
@@ -76,6 +77,11 @@ export async function POST(request) {
         category_id:Number(selectedCategory)
       }
     })
+    
+    const emailres = await sendEmail({email, emailType: "SERVICE",
+      userId: userId
+    })
+
 
     return new Response(
       JSON.stringify({ message: 'Service inserted successfully!' }),

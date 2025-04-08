@@ -22,13 +22,14 @@ export default function LoginForm() {
       redirect: false,
       username,
       password,
+      
     });
 
     if (result.error) {
       setError(result.error);
     } else {
+      window.location.href = "/"  
       
-      window.location.href = "/";
     }
   };
 
@@ -67,9 +68,11 @@ export default function LoginForm() {
         onChange={(e) => setPassword(e.target.value)}
         required
       />
+       <Link href="/forgotpassword">Forgot my password</Link>
       <button className="bg-indigo-500 text-white rounded-3xl py-2 px-10" type="submit">Sign in</button>
       {error && <p style={{ color: "red" }}>{error}</p>}
     </form>
+    
     </div>
     <div className=" flex justify-center items-center w-1/4 h-screen bg-indigo-500 flex-col text-white px-4">
       <p className="text-5xl font-bold justify-center items-center text-center leading-relaxed">New Here?</p>

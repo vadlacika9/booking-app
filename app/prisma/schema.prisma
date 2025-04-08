@@ -137,23 +137,28 @@ model services {
 }
 
 model users {
-  first_name      String?           @db.VarChar(50)
-  email           String            @unique(map: "unique_email") @db.VarChar(50)
-  username        String            @db.VarChar(50)
-  last_name       String?           @db.VarChar(50)
-  role            String?           @db.VarChar(50)
-  created_at      DateTime          @default(now()) @db.Timestamp(0)
-  password        String?           @db.VarChar(255)
-  phone_number    String?           @db.VarChar(50)
-  user_id         Int               @id @default(autoincrement())
-  profile_pic     String?           @db.VarChar(255)
-  oauth           String?           @db.VarChar(50)
-  feedback        feedback[]
-  images          images[]
-  notifications   notifications[]
-  payments        payments[]
-  services        services[]
-  user_promotions user_promotions[]
+  first_name          String?           @db.VarChar(50)
+  email               String            @unique(map: "unique_email") @db.VarChar(50)
+  username            String            @db.VarChar(50)
+  last_name           String?           @db.VarChar(50)
+  role                String?           @db.VarChar(50)
+  created_at          DateTime          @default(now()) @db.Timestamp(0)
+  password            String?           @db.VarChar(255)
+  phone_number        String?           @db.VarChar(50)
+  user_id             Int               @id @default(autoincrement())
+  profile_pic         String?           @db.VarChar(255)
+  oauth               String?           @db.VarChar(50)
+  isVerified          String            @db.VarChar(50)
+  resetPasswordToken  String?           @db.VarChar(255)
+  resetPasswordExpire DateTime?         @db.DateTime(0)
+  verifiyToken        String?           @db.VarChar(255)
+  verifiyTokenExpire  DateTime?         @db.DateTime(0)
+  feedback            feedback[]
+  images              images[]
+  notifications       notifications[]
+  payments            payments[]
+  services            services[]
+  user_promotions     user_promotions[]
 }
 
 model images {

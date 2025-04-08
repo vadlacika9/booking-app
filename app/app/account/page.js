@@ -2,12 +2,14 @@
 
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import MyAppointments from "@/components/MyAppointments";
 import MyServices from "@/components/MyServices";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
 import { getInitial } from "@/utils/getInitials";
+import { signOut } from "next-auth/react";
+import MySettings from "../../components/MySettings"
+import Image from "next/image";
 
 const Profile = () => {
   const [user, setUser] = useState([]);
@@ -17,9 +19,7 @@ const Profile = () => {
 
   useEffect(() => {
 
-    if (status === "unauthenticated") { //checking if the user is authenticated
-      router.push("/api/auth/signin"); 
-    }
+   
 
     if (session && session.user) { //checking the session & setting the user
       setUser(session.user);
@@ -34,7 +34,7 @@ const Profile = () => {
       case "My services":
         return <MyServices />;
       case "Settings":
-        return <p>⚙️ Settings content</p>; //need to specified
+        return <MySettings/>; //need to specified
       default:
         return (
             <div className="pl-10 font-semibold text-gray-800 text-3xl">Welcome, {user.last_name}</div> //need to specified
@@ -56,9 +56,19 @@ const Profile = () => {
   <aside className="w-1/3 dark:bg-gray-800 p-4 pr-0 border-r-2 border-gray-100 h-screen">
     <ul className="space-y-2 font-medium ">
       <div className="flex items-center py-4">
-        <div className="w-16 h-16 flex items-center justify-center bg-indigo-500 text-white font-bold text-4xl rounded-full">
-        {getInitial(session.user.last_name)}
-        </div>
+      <div className={`relative w-16 h-16 flex items-center justify-center ${session.user.profile_pic ? 'bg-white' : 'bg-indigo-500'} text-white font-bold text-4xl rounded-full`}>
+  {session.user.profile_pic ? (
+    <Image
+      src={session.user.profile_pic}
+      alt="Profilkép"
+      fill
+      className="object-cover rounded-full"
+    />
+  ) : (
+    getInitial(session.user.last_name)
+  )}
+</div>
+
         <div className="pl-4 text-2xl">{session.user.first_name} {session.user.last_name}</div>
       </div>
       {["My appointments", "My services", "Settings"].map((tab) => (
@@ -73,11 +83,12 @@ const Profile = () => {
           </button>
         </li>
       ))}
-      <Link href="/api/auth/signout">
-        <li className="flex w-full items-center p-2 hover:bg-indigo-300 cursor-pointer border-b-2 border-gray-100">
-          Log Out
-        </li>
-      </Link>
+      <li
+            className="flex w-full items-center p-2 hover:bg-indigo-300 cursor-pointer border-b-2 border-gray-100"
+            onClick={() => signOut({ redirect: true, callbackUrl: "/" })} // Jelentkezzen ki és irányítsa a bejelentkezési oldalra
+          >
+            Log Out
+          </li>
     </ul>
   </aside>
 

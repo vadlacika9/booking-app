@@ -65,7 +65,7 @@ export default function Carousel({ services }) {
       <div className="w-full overflow-hidden">
         <div
           className={`flex gap-5 w-max ${transitionRef.current ? 'transition-transform duration-500 ease-in-out' : ''}`}
-          style={{ transform: `translateX(-${isSingleItem ? 0 : currentIndex * 320}px)` }}
+          style={{ transform: `translateX(-${isSingleItem ? 0 : currentIndex * 280}px)` }}
         >
           {clonedServices.map((service, index) => (
             <Link key={`${service.service_id}-${index}`} href={`/services/${service.service_id}`} className="flex flex-col items-center">
@@ -75,11 +75,11 @@ export default function Carousel({ services }) {
                 alt={`Image ${index}`}
                 width={300}
                 height={200}
-                className="rounded-lg w-[300px] h-[200px] relative"
+                className="rounded-lg w-[260px] h-[180px] relative"
               />
-              <div className="flex flex-col absolute top-0 right-0 w-16 bg-black opacity-90 text-white text-sm p-2">
-                <div>{Number(service.service_avg_rating)} ★</div>
-                <div className="text-sm">rated</div>
+              <div className="flex flex-col absolute rounded-bl-lg rounded-tr-lg top-0 right-0 w-12 bg-black text-white text-xs py-2">
+                <div className="opacity-100" >{Number(service.service_avg_rating)} ★</div>
+                
               </div>
             </div>
             <div className="flex flex-col items-start w-full px-3 py-2 mt-2 rounded-md">

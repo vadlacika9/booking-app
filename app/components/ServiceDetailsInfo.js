@@ -9,6 +9,7 @@ const ServiceDetailsInfo = ({ service }) => {
       <div className="">
         <h2 className="text-gray-700  font-bold text-3xl"> {service.service_name}</h2>
         <p className="pt-1 text-sm text-gray-700">{service.service_location}, {service.service_address}</p>
+        <div className="text-gray-700 pt-4">{service.service_description}</div>
       </div>
 
       <div className="pt-10">

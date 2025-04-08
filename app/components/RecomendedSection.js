@@ -13,15 +13,21 @@ export default function RecommendedSection() {
   const [nearbyServices, setNearbyServices] = useState([]);
   const [isUserLocation, setIsUserLocation] = useState(false);
   const [error, setError] = useState(null);
+  const [position, setPosition] = useState(null);
 
  
 
  
   useEffect(() => {
-    if(localStorage.getItem("userLocation")){
+    if(sessionStorage.getItem("userLocation")){
+      const pos = JSON.parse(sessionStorage.getItem("userLocation"));
+     
+      setPosition(pos);
       setIsUserLocation(true);
+     
+      
     }
-  })
+  },[])
 
   useEffect(() => {
     if(!isUserLocation){
@@ -54,30 +60,34 @@ export default function RecommendedSection() {
          
         try {
           // fetching the places in 50 km radius
-          const response = await fetch(`http://api.geonames.org/findNearbyPlaceNameJSON?lat=47.1826432&lng=23.0621184&radius=50&maxRows=500&username=${username}`);
+      
+          const response = await fetch(`http://api.geonames.org/findNearbyPlaceNameJSON?lat=${position.lat}&lng=${position.lng}&radius=50&maxRows=500&username=${username}`);
   
           
           if (!response.ok) {
             setError(response.json())
             return;
           }
+
+         
   
           const data = await response.json();
-  
          
+  
+ 
           setAllLocations(data.geonames);
   
     
           const names = data.geonames.map((location) => location.name);
           setLocationNames(names);
-        
+          
         } catch (error) {
           setError(error);
         }
       };
   
       getLocations();
-    }, []);
+    }, [position]);
   
     useEffect(() => {
       if(isUserLocation){
@@ -98,6 +108,7 @@ export default function RecommendedSection() {
   
             const data = await res.json();
             setNearbyServices(data);
+
           } catch (error) {
             setError(error);
           }
@@ -108,6 +119,7 @@ export default function RecommendedSection() {
     }
     }, [locationNames]);
   
+   
 
   if (loading) return  <Loading/>
 
@@ -116,7 +128,7 @@ export default function RecommendedSection() {
       <h1 className="font-bold text-2xl py-10 text-gray-800">Recommended</h1>
     {!isUserLocation && <Carousel services={services}/>}
     {isUserLocation && <Carousel services={nearbyServices}/>}
-    {error && <div>{error}</div>}
+    
     </div>
   );
 }

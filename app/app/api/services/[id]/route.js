@@ -59,7 +59,8 @@ export async function GET(request, { params }) {
           county: service.services_location[0]?.location?.county,
           service_location: service.services_location[0]?.location?.city,
           service_address: service.services_location[0]?.location?.address,
-          days_available: service.duration[0].service_days_available
+          days_available: service.duration[0].service_days_available,
+          service_rating: service.average_rating
         }
       
     : [];

@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from 'bcrypt'
 import GoogleProvider from 'next-auth/providers/google'
 import GithubProvider from 'next-auth/providers/github'
-import { signIn } from "next-auth/react";
+
 
 
 const db = new PrismaClient();
@@ -12,7 +12,6 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID
 const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET
-
 export const authOptions = {
   providers: [
     CredentialsProvider({
@@ -32,12 +31,15 @@ export const authOptions = {
           }
         });
 
+       
         
         if (!user) {
-          throw new Error("Hibás felhasználónév vagy jelszó");
+          throw new Error("Incorrect username or password");
         }
 
-        
+        if(user.isVerified === "false"){
+          throw new Error("The user are not verified")
+        }
         if(user && ( await bcrypt.compare(credentials.password,user.password)))
         {
           return {
@@ -46,6 +48,7 @@ export const authOptions = {
             email: user.email,
             first_name: user.first_name,
             last_name: user.last_name,
+            profile_pic: user.profile_pic,
           };
         }
         
@@ -81,6 +84,16 @@ export const authOptions = {
         token.email = user.email;      
         token.first_name = user.first_name; 
         token.last_name = user.last_name;   
+        token.profile_pic = user.profile_pic
+      } else{
+        // manuális update() híváskor – frissítsd a DB alapján
+    const dbUser = await db.users.findUnique({
+      where: { user_id: token.id },
+    });
+
+    if (dbUser) {
+      token.profile_pic = dbUser.profile_pic;
+    }
       }
       return token; 
     },
@@ -92,6 +105,7 @@ export const authOptions = {
         session.user.email = token.email;         
         session.user.first_name = token.first_name; 
         session.user.last_name = token.last_name;   
+        session.user.profile_pic = token.profile_pic
       }
       return session; 
     },
@@ -111,7 +125,7 @@ export const authOptions = {
        if (existingUser) {
         // Ha a felhasználó már létezik, de másik providerrel regisztrált
         throw new Error(
-            `Ez az e-mail (${profile.email}) már regisztrált egy másik szolgáltatóval (${existingUser.provider}).`
+            `this user (${profile.email}) is occupied (${existingUser.provider}).`
           );
         
       }
@@ -141,7 +155,7 @@ export const authOptions = {
        if (existingUser) {
         // Ha a felhasználó már létezik, de másik providerrel regisztrált
         throw new Error(
-            `Ez az e-mail (${profile.email}) már regisztrált egy másik szolgáltatóval (${existingUser.provider}).`
+            `this user (${profile.email}) is occupied (${existingUser.provider}).`
           );
         
       }

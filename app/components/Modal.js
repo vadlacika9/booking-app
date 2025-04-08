@@ -3,7 +3,7 @@ import Calendar from 'react-calendar';
 import { useState, useEffect } from 'react';
 import 'react-calendar/dist/Calendar.css';
 import BookingModal from '../components/BookingModal';
-import { useSession,signIn } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from "next/navigation";
 
 const Modal = ({service}) => {
@@ -24,11 +24,13 @@ const Modal = ({service}) => {
   const [shouldDisableToday, setShouldDisableToday] = useState(false);
   const [shouldDisableTomorrow, setShouldDisableTomorrow] = useState(false);
   const [error,setError] = useState(null);
+  const [serviceName,setServiceName] = useState(null);
   
 
   const { data: session, status } = useSession();
   const router = useRouter();
 
+  
   const resetState = () => {
     setValue(null);
     setIsCalendarOpen(false);
@@ -181,12 +183,14 @@ const Modal = ({service}) => {
 
 
   const addBook = async () => {
-    if (!value || !selectedSlot || !servicePrice || !serviceId) {
-      console.log(value)
+    console.log(value)
       console.log(selectedSlot)
       console.log(servicePrice)
       console.log(serviceId)
-      console.error("Missing booking details.");
+      console.log(serviceName)
+    if (!value || !selectedSlot || !servicePrice || !serviceId || !serviceName) {
+      
+      setError("Missing booking details.");
       return;
     }
   
@@ -195,26 +199,15 @@ const Modal = ({service}) => {
       selectedSlot,
       value: value.toISOString().split("T")[0], 
       serviceId,
+      serviceName
     };
   
-    try {
-      const response = await fetch('/api/add-booking', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-  
-      if (!response.ok) {
-        throw new Error(`Booking failed: ${response.statusText}`);
-      }
-  
-      const result = await response.json();
-      console.log('Booking successful:', result);
-      setIsModalOpen();
-    } catch (error) {
-      setError(error)
-    }
-  };
+    console.log(JSON.stringify(payload))
+    
+    sessionStorage.setItem("bookingDetails", JSON.stringify(payload));
+    window.location.href = "/payment";
+    
+  }
 
 
 
@@ -249,6 +242,7 @@ const Modal = ({service}) => {
       setServicePrice(service.service_price);
       setUserId(session?.user?.id || null);
       setServiceId(service.service_id);
+      setServiceName(service.service_name);
     }
   }, [isModalOpen, bookedSlots, shouldDisableWeekends]);
   
@@ -308,7 +302,7 @@ const Modal = ({service}) => {
   <div className="flex justify-center gap-x-4 mt-4">
         <button
   className={`h-[45px] w-[80px] flex items-center justify-center rounded-lg border text-black transition-all duration-300
-    ${isClickedToday ? "bg-blue-500 text-white" : "bg-transparent"}
+    ${isClickedToday ? "bg-indigo-500 text-white" : "bg-transparent"}
     ${shouldDisableToday ? "cursor-auto opacity-50" : "cursor-pointer"}`}
   onClick={selectToday}
   disabled={shouldDisableToday}
@@ -321,7 +315,7 @@ const Modal = ({service}) => {
 
 <button
   className={`h-[45px] w-[80px] flex items-center justify-center rounded-lg border text-black transition-all duration-300
-    ${isClickedTomorrow ? "bg-blue-500 text-white" : "bg-transparent"}
+    ${isClickedTomorrow ? "bg-indigo-500 text-white" : "bg-transparent"}
     ${shouldDisableTomorrow ? "cursor-auto opacity-50" : "cursor-pointer"}`}
   onClick={selectTomorrow}
   disabled={shouldDisableTomorrow}
@@ -352,7 +346,7 @@ const Modal = ({service}) => {
             key={index}
             onClick={() => setSelectedSlot(slot)} 
             className={`min-w-[100px] flex items-center justify-center p-2 shadow rounded-lg cursor-pointer
-              ${selectedSlot === slot ? 'bg-blue-500 text-white' : 'text-black'}`}
+              ${selectedSlot === slot ? 'bg-indigo-500 text-white' : 'text-black'}`}
           >
             {slot}
           </div>
@@ -371,7 +365,7 @@ const Modal = ({service}) => {
 
  {value && selectedSlot ? (<div className="flex justify-center items-center">     
     <button 
-  className='px-4 py-2 text-center mt-10 cursor-pointer bg-blue-500 rounded text-white'
+  className='px-4 py-2 text-center mt-10 cursor-pointer bg-indigo-500 rounded text-white'
   onClick={addBook}
   
     >

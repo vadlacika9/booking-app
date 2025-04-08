@@ -1,23 +1,36 @@
 import { PrismaClient } from "@prisma/client";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]/route"
+import { sendEmail } from "@/utils/mailer";
+
 
 export async function POST(request) {
   const db = new PrismaClient();
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session || !session.user) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized user" }),
-        { status: 401, headers: { "Content-Type": "application/json" } }
-      );
-    }
+  const session = await getServerSession(authOptions);
 
+  if(!session){
+    return new Response(
+      JSON.stringify({ error: "No session" }),
+      { status: 401, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  const email = session.user.email;
+
+  try {
+  
+
+    
     const body = await request.json();
     if(body)
-      {console.log(body)}
+      {console.log("body",body)}
     
-    const { servicePrice, selectedSlot, value, serviceId } = body;
+    const { servicePrice, selectedSlot, value, serviceId, userId } = body;
+    console.log(serviceId)
+    console.log(servicePrice)
+    console.log(value)
+    console.log(selectedSlot)
+ 
 
     if (!servicePrice || !selectedSlot || !value || !serviceId) {
       return new Response(
@@ -26,14 +39,16 @@ export async function POST(request) {
       );
     }
 
-    const userId = session.user.id;
+   
+    console.log(userId)
+  
 
     const createPayment = await db.payments.create({
       data: {
-        value: servicePrice,
-        status: "processing",
-        method: "online",
-        user_id: userId,
+        value: Number(servicePrice),
+        status: "payed",
+        method: "card",
+        user_id: Number(userId),
       },
     });
 
@@ -42,7 +57,7 @@ export async function POST(request) {
     const createDuration = await db.duration.create({
       data: {
         start_time: selectedSlot,
-        service_id: serviceId,
+        service_id: Number(serviceId),
         booking_day: value
       },
     });
@@ -52,12 +67,16 @@ export async function POST(request) {
     const createBookings = await db.bookings.create({
       data: {
         status: "processing",
-        final_price: servicePrice,
-        service_id: serviceId,
-        payment_id: paymentId,
-        duration_id: durationId,
+        final_price: Number(servicePrice),
+        service_id: Number(serviceId),
+        payment_id: Number(paymentId),
+        duration_id: Number(durationId),
       },
     });
+
+    const emailres = await sendEmail({email, emailType: "BOOKING",
+          userId: userId
+        })
 
     return new Response(
       JSON.stringify({ message: "Booking inserted successfully!" }),

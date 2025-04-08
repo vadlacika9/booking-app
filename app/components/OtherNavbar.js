@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { getInitial } from '@/utils/getInitials';
-
+import Image from 'next/image';
 export default function OtherNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const {data: session, status} = useSession();
@@ -24,12 +24,21 @@ export default function OtherNavbar() {
         <div className="hidden md:flex space-x-6 ">
        
         {status === 'authenticated' && (
-            <Link href="/account" className="text-white hover:text-gray-300 flex items-center space-x-2">
-              <div className="w-9 h-9 flex items-center justify-center bg-indigo-500 text-white font-bold text-xl rounded-full">
-              {getInitial(session.user.last_name)}
-              </div>
-              <span>Profile</span>
-            </Link>
+             <Link href="/account" className="text-white hover:text-gray-300 flex items-center space-x-2">
+             <div className={`relative w-9 h-9 rounded-full overflow-hidden ${session.user.profile_pic ? 'bg-white' : 'bg-indigo-500'} text-white font-bold text-xl flex items-center justify-center`}>
+               {session.user.profile_pic ? (
+                 <Image
+                   src={session.user.profile_pic}
+                   alt="Profilkép"
+                   fill
+                   className="object-cover"
+                 />
+               ) : (
+                 getInitial(session.user.last_name)
+               )}
+             </div>
+             <span>Profile</span>
+           </Link>
           )}
           {status === 'unauthenticated' && (
             <Link href="/api/auth/signin" className="text-white hover:text-gray-300 p-2">

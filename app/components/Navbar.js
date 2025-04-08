@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { getInitial } from '@/utils/getInitials';
+import Image from 'next/image';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: session, status } = useSession();
+  const { data: session,update, status } = useSession();
   const [isSticky, setIsSticky] = useState(false);
 
+  
   useEffect(() => {
     const handleScroll = () => {
       setIsSticky(window.scrollY > 400);
@@ -17,6 +19,8 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+
 
   return (
     <nav
@@ -42,14 +46,24 @@ export default function Navbar() {
 
         {/* Menu Items (desktop) */}
         <div className="hidden md:flex space-x-6">
-          {status === 'authenticated' && (
-            <Link href="/account" className="text-white hover:text-gray-300 flex items-center space-x-2">
-              <div className="w-9 h-9 flex items-center justify-center bg-indigo-500 text-white font-bold text-xl rounded-full">
-                {getInitial(session.user.last_name)}
-              </div>
-              <span>Profile</span>
-            </Link>
-          )}
+        {status === 'authenticated' && (
+  <Link href="/account" className="text-white hover:text-gray-300 flex items-center space-x-2">
+  <div className={`relative w-9 h-9 rounded-full overflow-hidden ${session.user.profile_pic ? 'bg-white' : 'bg-indigo-500'} text-white font-bold text-xl flex items-center justify-center`}>
+    {session.user.profile_pic ? (
+      <Image
+        src={session.user.profile_pic}
+        alt="Profilkép"
+        fill
+        className="object-cover"
+      />
+    ) : (
+      getInitial(session.user.last_name)
+    )}
+  </div>
+  <span>Profile</span>
+</Link>
+
+)}
           {status === 'unauthenticated' && (
             <Link href="/api/auth/signin" className="text-white hover:text-gray-300 p-2">
               Login

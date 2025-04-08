@@ -8,8 +8,7 @@ import HeroSection from "../components/HeroSection";
 import RecommendedSection from "../components/RecomendedSection";
 import Slidein from "@/components/Slide-in";
 import Footer from "@/components/Footer";
-
-
+import Loading from "@/components/Loading";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -17,10 +16,15 @@ export default function App() {
   const [error, setError] = useState(null)
 
 
+
   useEffect(() => {
     AOS.init({
-      duration: 1000 
+      duration: 1000, 
+      offset: 20,
+
+   
     });
+
 
   },[])
 
@@ -48,11 +52,10 @@ export default function App() {
       console.log(session)
     }
   },[session])
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="spinner border-t-4 border-b-4 border-blue-500 rounded-full w-16 h-16 animate-spin"></div>
-      </div>
+      <Loading/>
     );
   }
 

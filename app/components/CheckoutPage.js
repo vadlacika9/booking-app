@@ -2,14 +2,30 @@
 
 import React, { useEffect, useState } from "react";
 import { useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js";
-import convertToSubcurrency from "@/lib/convertToSubcurrency";
+import convertToSubCurrency from "@/utils/convertToSubCurrency";
+import { useSession } from "next-auth/react";
 
-const CheckoutPage = ({ amount }) => {
+const CheckoutPage = ({ details, userId}) => {
   const stripe = useStripe();
   const elements = useElements();
   const [errorMessage, setErrorMessage] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
   const [loading, setLoading] = useState(false);
+  const { data: session, status } = useSession();
+  const [user, setUser]= useState(null);
+
+  useEffect(() => {
+
+   
+
+    if (session && session.user) { //checking the session & setting the user
+      setUser(session.user);
+    }
+  }, [session, status]);
+
+  useEffect(() => {
+    console.log(user)
+  },[session])
 
   useEffect(() => {
     fetch("/api/create-payment-intent", {
@@ -17,11 +33,11 @@ const CheckoutPage = ({ amount }) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ amount: convertToSubcurrency(amount) }),
+      body: JSON.stringify({ amount: convertToSubCurrency(details.servicePrice) }),
     })
       .then((res) => res.json())
       .then((data) => setClientSecret(data.clientSecret));
-  }, [amount]);
+  }, [details]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -43,7 +59,7 @@ const CheckoutPage = ({ amount }) => {
       elements,
       clientSecret,
       confirmParams: {
-        return_url: `http://www.localhost:3000/payment-success?amount=${amount}`,
+        return_url: `http://localhost:3000/payment-success?amount=${details.servicePrice}&selectedSlot=${details.selectedSlot}&value=${details.value}&serviceId=${details.serviceId}&userId=${userId}`,
       },
     });
 
@@ -74,7 +90,7 @@ const CheckoutPage = ({ amount }) => {
         disabled={!stripe || loading}
         className="text-white w-full p-5 bg-black mt-2 rounded-md font-bold disabled:opacity-50 disabled:animate-pulse"
       >
-        {!loading ? `Pay $${amount}` : "Processing..."}
+        {!loading ? `Pay ${details.servicePrice} RON` : "Processing..."}
       </button>
     </form>
   );

@@ -1,6 +1,7 @@
 
 import bcrypt from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
+import { sendEmail } from '@/utils/mailer';
 
 export async function POST(req){
   const body = await req.json();
@@ -17,10 +18,13 @@ export async function POST(req){
   try{
     const existingUser = await db.users.findFirst({
       where: {
-        username: username,
-        email: email
+        AND: [
+          { username: username },
+          { email: email }
+        ]
       }
-    })
+   })
+   
 
     if(existingUser){
       return new Response(
@@ -28,7 +32,7 @@ export async function POST(req){
           { status: 400, headers: { 'Content-Type': 'application/json' } }
       )
     }
-
+    
     const hashedPassword = await bcrypt.hash(password,10);
     const user = await db.users.create({
       data:{
@@ -38,13 +42,22 @@ export async function POST(req){
         email: email,
         phone_number: phoneNumber,
         password: hashedPassword,
-        role:'user'
+        role:'user',
+        isVerified: "false"
 
       }
     })
 
+    //send verification email
+
+    const emailres = await sendEmail({email, emailType: "VERIFY",
+      userId: user.user_id
+    })
+
+    console.log(emailres)
+
     return new Response(
-      JSON.stringify({ error: 'Successfull registration!' }),
+      JSON.stringify({ message: 'Successfull registration!' }),
         { status: 201, headers: { 'Content-Type': 'application/json' } }
     )
 

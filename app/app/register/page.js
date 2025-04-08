@@ -108,7 +108,7 @@ export default function Register() {
         <button type="submit" className="bg-indigo-500 text-white rounded-3xl py-2 px-10 mt-10">Register</button>
       </form>
       </div>
-     {error && <div>{error}</div>}
+     {error && <div>{error?.message || "An error occurred"}</div>}
     </div>
   );
 }

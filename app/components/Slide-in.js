@@ -1,3 +1,5 @@
+//TODO: a helymeghatarozast kulon komponensbe tenni es a leirasokat atalakitani ssr-be a jobb seo miatt
+
 'use client'
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -9,35 +11,41 @@ const Slidein = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if(localStorage.getItem("userLocation")){
+    if(sessionStorage.getItem("userLocation")){
       setIsVisible(false);
     }
-  })
-const saveUserLocation = () => {
-  if ("geolocation" in navigator) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
+  },[])
 
-        localStorage.setItem("userLocation", JSON.stringify({ lat, lng }));
+  const [isLoading, setIsLoading] = useState(false);
 
-        
-        setIsVisible(false)
-        window.location.reload();
-      },
-      (error) => {
-        console.error("error:", error);
-      }
-    );
-  } else {
-    console.log("error");
-  }
-};
+  const saveUserLocation = () => {
+    if ("geolocation" in navigator) {
+      setIsLoading(true);
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+  
+          sessionStorage.setItem("userLocation", JSON.stringify({ lat, lng }));
+  
+          setIsLoading(false);
+          setIsVisible(false);
+          window.location.reload();
+        },
+        (error) => {
+          console.error("error:", error);
+          setIsLoading(false);
+        }
+      );
+    } else {
+      console.log("error");
+    }
+  };
+  
 
   return(
-    <div className="px-4 md:px-8 py-10 mt-16 max-w-7xl mx-auto">
-
+    
+    <div className={`px-4 md:px-8 py-10 mt-16 max-w-7xl mx-auto h-[2000px]`}>
 {isVisible && (<div className="flex items-center justify-center">
   <div data-aos="fade-up" className="w-full p-6 rounded-lg border-2 shadow-md flex justify-between items-center mb-24">
     <div>
@@ -53,9 +61,9 @@ const saveUserLocation = () => {
 </div>
 )}
       {/* Flexbox container */}
-      <div className="flex flex-col md:flex-row items-stretch mt-10 gap-6">
+      <div className={`flex flex-col md:flex-row items-stretch justify-between gap-6`}>
         {/* Left image */}
-        <div data-aos="fade-right" className="w-full md:w-1/2 flex justify-center items-center pr-10">
+        <div data-aos="fade-right" className="w-full md:w-1/2 flex justify-center items-center">
           <Image
             src="/images/kep2.jpg"
             alt="Online booking"
@@ -66,27 +74,27 @@ const saveUserLocation = () => {
         </div>
 
         {/* right text */}
-        <div data-aos="fade-left" className="w-full md:w-1/2">
-        <h1 className="text-3xl pb-14"><strong>The Advantages of Online Booking</strong></h1>
-          <p className="text-lg">
+        <div data-aos="fade-left" className="w-full md:w-1/2  rounded-lg p-4 px-6 text-center ">
+        <h1 className="text-3xl pb-2"><strong>The Advantages of Online Booking</strong></h1>
+          <p className="text-lg ">
           The Advantages of Online Booking
 
-In todays digital age, online booking has become an essential tool for both businesses and customers alike. Here are some of the key advantages of using online booking systems:
+          In todays digital age, online booking has become an essential tool for both businesses and customers alike. Here are some of the key advantages of using online booking systems:
 
-Convenience: Online booking allows customers to make reservations at any time of the day or night, from the comfort of their own homes. This flexibility is particularly beneficial for those with busy schedules or those living in different time zones.
+          Convenience: Online booking allows customers to make reservations at any time of the day or night, from the comfort of their own homes. This flexibility is particularly beneficial for those with busy schedules or those living in different time zones.
 
-Time-Saving: With online booking, theres no need to make phone calls or visit a physical location to secure a reservation. This saves valuable time for both customers and businesses.
+        Time-Saving: With online booking, theres no need to make phone calls or visit a physical location to secure a reservation. This saves valuable time for both customers and businesses.
           </p>
          
         </div>
       </div>
 
       {/* Flexbox container */}
-      <div className="flex flex-col md:flex-row items-stretch mt-40 gap-6">
+      <div className="flex flex-col md:flex-row justify-between items-stretch mt-40  rounded-lg gap-6 ">
 
         {/* right text */}
-        <div data-aos="fade-right" className="w-full md:w-1/2">
-        <h1 className="text-3xl pb-14"><strong>The Advantages of Online Booking</strong></h1>
+        <div data-aos="fade-right" className="w-full md:w-1/2 text-center  rounded-lg px-6 p-4 ">
+        <h1 className="text-3xl pb-3"><strong>The Advantages of Online Booking</strong></h1>
           <p className="text-lg">
           The Advantages of Online Booking
 
@@ -99,7 +107,7 @@ Time-Saving: With online booking, theres no need to make phone calls or visit a 
          
         </div>
         {/* left image */}
-        <div data-aos="fade-left" className="w-full md:w-1/2 flex justify-center items-center pr-10">
+        <div data-aos="fade-left" className="w-full md:w-1/2 flex justify-center items-center">
           <Image
             src="/images/massage.jpg"
             alt="Online booking"
@@ -109,7 +117,9 @@ Time-Saving: With online booking, theres no need to make phone calls or visit a 
           />
         </div>
       </div>
-      <div className="flex flex-col md:flex-row items-stretch mt-40 gap-6">
+
+      {/* Flexbox container */}
+      <div className="flex flex-col md:flex-row items-stretch mt-40 gap-6 ">
         {/* left image */}
         <div data-aos="fade-right" className="w-full md:w-1/2 flex justify-center items-center pr-10">
           <Image

@@ -1,5 +1,5 @@
 'use client';
-
+//TODO: oldal atalakitasa ssr-be ha lehetseges
 import { useParams } from 'next/navigation';
 import ServiceDetailsInfo from '@/components/ServiceDetailsInfo';
 import { useSession } from 'next-auth/react';
@@ -68,14 +68,17 @@ const ServiceDetails = () => {
     
     {/* Left side */}
     <div className="flex-2 flex items-center justify-center relative w-[750px] h-[500px]">
-      <Image
-        src={imageUrl}
-        layout="fill"
-        alt="service picture"
-        objectFit="cover"
-        className="rounded-lg shadow-lg"
-      />
-    </div>
+ 
+    <Image
+      src={imageUrl}
+      layout="fill"
+      alt="service picture"
+      objectFit="cover"
+      className="rounded-lg shadow-lg"
+    />
+    
+</div>
+
     
     {/* Right side */}
     <div className="flex-1 px-10">

@@ -2,11 +2,9 @@
 
 const Loading = () => {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-blue-100 bg-opacity-50 z-50">
-      <div className="text-white text-3xl font-semibold">
-        Loading...
+    <div className="flex items-center justify-center h-screen">
+        <div className="spinner border-t-4 border-b-4 border-indigo-500 rounded-full w-16 h-16 animate-spin"></div>
       </div>
-    </div>
   );
 };
 
