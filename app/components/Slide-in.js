@@ -68,7 +68,7 @@ const Slidein = () => {
           </h1>
           <p className="text-lg text-gray-700 space-y-4">
             <span className="block mb-4">
-              In today's digital age, online booking has become an essential tool for both businesses and customers alike. Here are some of the key advantages of using online booking systems:
+              In today&apos;s digital age, online booking has become an essential tool for both businesses and customers alike. Here are some of the key advantages of using online booking systems:
             </span>
             
             <span className="block pl-4 border-l-4 border-indigo-500 mb-4">
