@@ -29,7 +29,7 @@ const Slidein = () => {
           </h1>
           <p className="text-lg text-gray-700 space-y-4">
             <span className="block mb-4">
-            In today’s fast-paced digital world, convenience and efficiency are more important than ever. Online booking systems offer a smart solution for businesses and customers alike, streamlining the reservation process and creating a smoother, more professional experience for everyone involved. 
+            In today&apos;s fast-paced digital world, convenience and efficiency are more important than ever. Online booking systems offer a smart solution for businesses and customers alike, streamlining the reservation process and creating a smoother, more professional experience for everyone involved. 
             </span>
             
             <span className="block pl-4 border-l-4 border-indigo-500 mb-4">

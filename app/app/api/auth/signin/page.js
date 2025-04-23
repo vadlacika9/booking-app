@@ -195,7 +195,7 @@ export default function LoginForm() {
 
       {/* Mobile signup link */}
       <div className="md:hidden text-center py-8 border-t border-gray-200 mt-8">
-        <p className="text-gray-600 mb-4">Don't have an account?</p>
+        <p className="text-gray-600 mb-4">Don&apos;t have an account?</p>
         <Link 
           href="/register" 
           className="inline-block bg-indigo-100 text-indigo-600 font-medium px-6 py-3 rounded-full hover:bg-indigo-200 transition-all duration-200"

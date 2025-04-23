@@ -128,7 +128,7 @@ const Bookings = () => {
   if (service && session && session.user && Number(service.user_id) !== Number(session.user.id)) {
     return <div className="text-center p-8 bg-red-50 rounded-lg shadow-md mt-10">
       <h3 className="text-xl font-semibold text-red-600">Access Denied</h3>
-      <p className="mt-2 text-gray-700">You don't have permission to access this page.</p>
+      <p className="mt-2 text-gray-700">You don&apos;t have permission to access this page.</p>
     </div>;
   }
 
