@@ -47,31 +47,85 @@ var transport = nodemailer.createTransport({
 
 const getMailContent = (type, hashedToken) => {
   const baseUrl = process.env.DOMAIN;
+  const styles = `
+    font-family: Arial, sans-serif;
+    color: #333;
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    background-color: #ffffff;
+  `;
+  const linkStyle = "color: #1a73e8; text-decoration: none;";
+
   switch (type) {
     case "VERIFY":
       return {
-        subject: "Verify your email",
-        html: `<p>Click <a href="${process.env.DOMAIN}/verifyemail?token=${hashedToken}">here</a> to verify your email.</p>`
+        subject: "Confirm Your Email Address",
+        html: `
+          <div style="${styles}">
+            <h2>Hello,</h2>
+            <p>Thank you for signing up! Please confirm your email address by clicking the link below:</p>
+            <p><a href="${baseUrl}/verifyemail?token=${hashedToken}" style="${linkStyle}">Verify Email</a></p>
+            <p>If you did not sign up, you can safely ignore this message.</p>
+            <br/>
+            <p>Best regards,<br/>The Team</p>
+          </div>
+        `
       };
+
     case "RESET":
       return {
-        subject: "Reset your password",
-        html: `<p>Click <a href="${process.env.DOMAIN}/resetpassword?token=${hashedToken}">here</a> to reset your password.</p>`
+        subject: "Password Reset Request",
+        html: `
+          <div style="${styles}">
+            <h2>Hello,</h2>
+            <p>We received a request to reset your password. To proceed, please click the link below:</p>
+            <p><a href="${baseUrl}/resetpassword?token=${hashedToken}" style="${linkStyle}">Reset Password</a></p>
+            <p>If you did not request this, you can safely disregard this message.</p>
+            <br/>
+            <p>Kind regards,<br/>Customer Support Team</p>
+          </div>
+        `
       };
+
     case "SERVICE":
       return {
-        subject: "Successfully added your service!",
-        html: `<p>We're glad to have you. 🎉</p>`
+        subject: "Your Service Has Been Successfully Added!",
+        html: `
+          <div style="${styles}">
+            <h2>Hello Service Provider,</h2>
+            <p>We’re pleased to inform you that your service has been successfully added to our platform.</p>
+            <p>It is now visible to users and ready to receive bookings.</p>
+            <p>Thank you for choosing our platform!</p>
+            <br/>
+            <p>Sincerely,<br/>The Team</p>
+          </div>
+        `
       };
+
     case "BOOKING":
       return {
-        subject: "Successfull Booking!",
-        html: `<p>We're glad to have you. 🎉</p>`
+        subject: "Your Booking Has Been Confirmed!",
+        html: `
+          <div style="${styles}">
+            <h2>Hi there,</h2>
+            <p>Thank you for your booking! We have successfully received and confirmed your reservation.</p>
+            <p>You can view all the details by logging into your account.</p>
+            <p>If you have any questions, feel free to reach out to us.</p>
+            <br/>
+            <p>Best regards,<br/>The Team</p>
+          </div>
+        `
       };
+
     default:
       throw new Error("Unknown email type");
   }
 };
+
+
 
 const { subject, html } = getMailContent(emailType, hashedToken);
 

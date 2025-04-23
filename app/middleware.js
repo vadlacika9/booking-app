@@ -1,16 +1,16 @@
-
-import { withAuth } from "next-auth/middleware";
-
+import { withAuth } from "next-auth/middleware"
 
 export default withAuth({
-
-  pages: {
-    signIn: "/api/auth/signin",
+  // Oldalak, amikhez autentikáció szükséges
+  callbacks: {
+    authorized: ({ token }) => !!token,
   },
-});
+})
 
+// Csak ezekre az útvonalakra vonatkozik
 export const config = {
   matcher: [
-    "/account"
-    ],
-};
+    "/account",
+    "/add-service"
+  ],
+}

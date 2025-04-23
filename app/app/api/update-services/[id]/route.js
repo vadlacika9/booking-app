@@ -7,7 +7,30 @@ export async function PUT(request) {
     const body = await request.json();
     const { service_id, user_id, service_name, service_description, service_price, duration_id, duration_start_time, duration_end_time, images, service_location, service_address, days_available, location_id, postal_code, county, image_id } = body;
 
-   
+   console.log("allimages", images)
+
+   const existingImages = await prisma.images.findMany({
+    where: {
+      path: {
+        in: images,
+      },
+    },
+    select: {
+      path: true,
+    },
+  });
+
+  const existingPaths = existingImages.map(img => img.path);
+
+// 2. Új path-ok kiszűrése
+const newImagePaths = images.filter(path => !existingPaths.includes(path));
+
+if (newImagePaths.length > 0) {
+  await prisma.images.createMany({
+    data: newImagePaths.map(path => ({ path, service_id:service_id, type:"service" })),
+    skipDuplicates: true,
+  });
+}
     const updatedData = await prisma.$transaction([
       prisma.location.update({
         where: { location_id },
@@ -26,10 +49,8 @@ export async function PUT(request) {
           price: Number(service_price),
         },
       }),
-      prisma.images.update({
-        where: { image_id },
-        data: { path: images },
-      }),
+      
+      
       prisma.duration.update({
         where: { duration_id },
         data: {
@@ -51,6 +72,6 @@ export async function PUT(request) {
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }finally{
-    await db.$disconnect();
+    await prisma.$disconnect();
   }
 }

@@ -45,7 +45,7 @@ export async function POST(request, { params }) {
   try {
    
     const body = await request.json();
-    console.log(body);
+    console.log("body:", body);
 
    
     const { userId, comment, rating } = body; 
@@ -54,7 +54,7 @@ export async function POST(request, { params }) {
     const serviceId = Number(id); 
 
  
-    if (!userId || !comment || !rating || !serviceId) {
+    if (!userId || !serviceId) {
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
         { status: 400, headers: { "Content-Type": "application/json" } }
@@ -64,8 +64,8 @@ export async function POST(request, { params }) {
  
     const addFeedback = await db.feedback.create({
       data: {
-        user_id: userId,
-        service_id: serviceId,
+        user_id: Number(userId),
+        service_id: Number(serviceId),
         comment: comment,
         rating: rating,
       },
@@ -89,8 +89,8 @@ export async function POST(request, { params }) {
 
 export async function DELETE(request){
   try{
-    const feedback_id = await request.json();
-    
+    const {feedback_id} = await request.json();
+    console.log(feedback_id)
     const deleteRev = await db.feedback.delete({
       where: {
         feedback_id: Number(feedback_id)

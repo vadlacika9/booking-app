@@ -13,7 +13,7 @@ export async function DELETE(request) {
     const deleteService = await db.$transaction([
       
       
-     db.duration.deleteMany({
+      db.duration.deleteMany({
         where: {
           duration_id: Number(duration_id)
         }
@@ -41,7 +41,7 @@ export async function DELETE(request) {
       
       db.images.deleteMany({
         where: {
-          image_id: Number(image_id)
+          service_id: Number(service_id)
         }
       }),
 
@@ -57,6 +57,11 @@ export async function DELETE(request) {
         }
       }),
 
+      db.feedback.deleteMany({
+        where:{
+          service_id:Number(service_id)
+        }
+      }),
    
       db.services.deleteMany({
         where: {

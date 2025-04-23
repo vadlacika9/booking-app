@@ -5,7 +5,8 @@ import { loadStripe } from "@stripe/stripe-js"
 import CheckoutPage from "@/components/CheckoutPage"
 import convertToSubCurrency from "@/utils/convertToSubCurrency"
 import { useEffect, useState } from "react"
-import { useSession } from "next-auth/react";
+import { useSession } from "next-auth/react"
+import { Loader2 } from "lucide-react"
 
 if (process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY === undefined) {
   throw new Error("NEXT_PUBLIC_STRIPE_PUBLIC_KEY is not defined")
@@ -14,62 +15,79 @@ if (process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY === undefined) {
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY)
 
 export default function Payment() {
-  const [bookingDetails, setBookingDetails] = useState(null);
-  const { data: session, status } = useSession();
-  const [userId, setUserId]= useState(null);
+  const [bookingDetails, setBookingDetails] = useState(null)
+  const { data: session, status } = useSession()
+  const [userId, setUserId] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-
-   
-
-    if (session && session.user) { //checking the session & setting the user
-      setUserId(session.user.id);
+    if (session && session.user) {
+      setUserId(session.user.id)
     }
-  }, [session, status]);
+  }, [session, status])
 
+  // Load booking details from sessionStorage
   useEffect(() => {
-    console.log(userId)
-  },[session])
-
-  // Kiolvasás a sessionStorage-ból
-  useEffect(() => {
-    const savedBookingDetails = sessionStorage.getItem("bookingDetails");
+    setIsLoading(true)
+    const savedBookingDetails = sessionStorage.getItem("bookingDetails")
+    
     if (savedBookingDetails) {
-      setBookingDetails(JSON.parse(savedBookingDetails));
+      setBookingDetails(JSON.parse(savedBookingDetails))
     } else {
-      // Ha nincs mentett adat, átirányíthatod az oldalra, hogy újra próbálja meg a felhasználó
-      console.error("No booking details found in session storage.");
-      // Például átirányíthatod egy hibaoldalra:
-      // window.location.href = "/error";
+      console.error("No booking details found in session storage.")
+      // Could redirect to an error page:
+      // window.location.href = "/error"
     }
-  }, []);
+    setIsLoading(false)
+  }, [])
 
-  // Ha a bookingDetails még nincs betöltve, ne rendereljük a fizetési oldalt
-  if (!bookingDetails) {
+  // Show a loading state
+  if (isLoading || !bookingDetails) {
     return (
-      <div>Loading...</div>  // Ide rakhatod, hogy mi történjen, ha a bookingDetails nem elérhető
-    );
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+        <div className="p-8 rounded-lg shadow-md bg-white max-w-md w-full text-center">
+          <Loader2 className="h-10 w-10 animate-spin text-blue-500 mx-auto mb-4" />
+          <p className="text-gray-700 text-lg">Loading payment details...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <main className="max-w-6xl mx-auto p-10 text-white text-center border m-10 rounded-md bg-gradient-to-tr from-blue-500 to-purple-500">
-      <div className="mb-10">
-        <h1 className="text-4xl font-extrabold mb-2">{bookingDetails.serviceName}</h1>
-        <h2 className="text-2xl">
-          has requested 
-          <span className="font-bold"> {bookingDetails.servicePrice} RON</span>
-        </h2>
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-xl mx-auto">
+        <div className="bg-white shadow-xl rounded-lg overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-tr from-blue-600 to-purple-600 px-6 py-8 text-white">
+            <h1 className="text-3xl font-bold mb-2 text-center">{bookingDetails.serviceName}</h1>
+            <div className="text-center">
+              <p className="text-lg mb-1">Payment Request</p>
+              <p className="text-2xl font-bold">{bookingDetails.servicePrice} RON</p>
+            </div>
+          </div>
+          
+          {/* Payment Form */}
+          <div className="p-6">
+            <Elements
+              stripe={stripePromise}
+              options={{
+                mode: "payment",
+                amount: convertToSubCurrency(bookingDetails.servicePrice),
+                currency: "ron"
+              }}
+            >
+              <CheckoutPage details={bookingDetails} userId={userId} />
+            </Elements>
+          </div>
+          
+          {/* Footer */}
+          <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+            <p className="text-sm text-gray-500 text-center">
+              Secure payment processing by Stripe
+            </p>
+          </div>
+        </div>
       </div>
-
-      <Elements 
-        stripe={stripePromise}
-        options={{
-          mode: "payment",
-          amount: convertToSubCurrency(bookingDetails.servicePrice),
-          currency: "ron"  // Itt módosítottam a devizát RON-ra
-        }}>
-        <CheckoutPage details={bookingDetails} userId={userId} />
-      </Elements>
-    </main>
-  );
+    </div>
+  )
 }

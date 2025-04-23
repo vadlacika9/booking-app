@@ -44,7 +44,7 @@ export async function GET() {
       duration_end_time: service.duration[0]?.end_time || null,
       images: service.images.length
         ? service.images.map(img => img.path)
-        : ['https://ceouekx9cbptssme.public.blob.vercel-storage.com/default-oCOnxEAVLnQCAxCIb9R87WUp5jLrTP.png'],
+        : ['https://ceouekx9cbptssme.public.blob.vercel-storage.com/default-NIiwIB7QvsHFa1RVneC6dHZdSQIrAs.png'],
       location_id: service.services_location[0]?.location?.location_id || null,
       postal_code: service.services_location[0]?.location?.postal_code || null,
       county: service.services_location[0]?.location?.county || null,

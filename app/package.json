@@ -25,6 +25,7 @@
     "framer-motion": "^12.4.10",
     "google-maps": "^4.3.3",
     "leaflet": "^1.9.4",
+    "lucide-react": "^0.487.0",
     "maplibre-gl": "^5.2.0",
     "mongoose": "^8.8.0",
     "mysql": "^2.18.1",

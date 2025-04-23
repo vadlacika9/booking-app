@@ -48,7 +48,7 @@ export async function GET() {
       images: service.images.length > 0
         ? service.images.map((img) => img.path) 
         : [
-            'https://ceouekx9cbptssme.public.blob.vercel-storage.com/default-oCOnxEAVLnQCAxCIb9R87WUp5jLrTP.png', 
+            'https://ceouekx9cbptssme.public.blob.vercel-storage.com/default-NIiwIB7QvsHFa1RVneC6dHZdSQIrAs.png', 
           ],},
    
       location: {

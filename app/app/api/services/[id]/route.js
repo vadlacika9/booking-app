@@ -52,8 +52,10 @@ export async function GET(request, { params }) {
           duration_id: service.duration[0]?.duration_id,
           duration_start_time: service.duration[0]?.start_time,
           duration_end_time: service.duration[0]?.end_time,
-          image_id: service.images[0].image_id,
-          images: service.images[0].path, 
+          images: service.images.map(img => ({
+            image_id: img.image_id,
+            path: img.path
+          })),
           location_id: service.services_location[0]?.location?.location_id,
           postal_code: service.services_location[0]?.location?.postal_code,
           county: service.services_location[0]?.location?.county,

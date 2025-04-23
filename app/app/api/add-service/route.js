@@ -15,7 +15,7 @@ export async function POST(request) {
     console.log(body);
     // validating data
     
-    if (!serviceName || !serviceDesc || !servicePrice || !serviceCounty || !serviceCity || !serviceAddress || !servicePostal || !image || !startTime || !endTime || !availableDays || !phoneNumber || !selectedCategory) {
+    if (!serviceName || !servicePrice || !serviceCounty || !serviceCity || !serviceAddress || !servicePostal  || !startTime || !endTime || !availableDays || !phoneNumber || !selectedCategory) {
       return new Response(
         JSON.stringify({ error: 'Minden mező kitöltése kötelező!' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
@@ -52,14 +52,18 @@ export async function POST(request) {
         service_id: servId
       }
     })
-
-    const createImage = await db.images.create({
-      data:{
-        type: 'service',
-        service_id: servId,
-        path: image || "https://ceouekx9cbptssme.public.blob.vercel-storage.com/Screenshot%202024-02-04%20144520-FB6A8u4IVY2Dc9LReBnsBwDbLCkYpV.png"
-      }
-    })
+    
+      const createImages = await Promise.all(
+        image.map((imgUrl) =>
+          db.images.create({
+            data: {
+              type: 'service',
+              service_id: servId,
+              path: imgUrl
+            }
+          })
+        )
+      );
 
     const createDuration = await db.duration.create({
       data:{
