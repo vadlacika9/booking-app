@@ -72,7 +72,7 @@ const Slidein = () => {
             </span>
             
             <span className="block pl-4 border-l-4 border-indigo-500 mb-4">
-              <strong className="text-indigo-700">Ultimate Convenience:</strong> With just a few clicks, customers can schedule appointments without making phone calls or visiting in person. It’s quick, easy, and stress-free.
+              <strong className="text-indigo-700">Ultimate Convenience:</strong> With just a few clicks, customers can schedule appointments without making phone calls or visiting in person. It&apos;s quick, easy, and stress-free.
             </span>
             
             <span className="block pl-4 border-l-4 border-indigo-500">
