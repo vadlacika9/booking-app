@@ -11,9 +11,9 @@ export default async function App() {
     cache: "no-store",
   });
 
-  if (!res.ok) {
+  /*if (!res.ok) {
     throw new Error("Hiba történt a szolgáltatások lekérésekor.");
-  }
+  }*/
 
   const services = await res.json();
 

@@ -75,7 +75,7 @@ export async function POST(request) {
       }
     })
 
-    const createServiceCategory = await db.services_category.create({
+    const createServiceCategory = await db.service_category.create({
       data:{
         service_id:Number(servId),
         category_id:Number(selectedCategory)

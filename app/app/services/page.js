@@ -7,6 +7,8 @@ export default async function Services() {
   const services = await getServices();
   const categories = await getCategories();
 
+  console.log(categories)
+
   // If needed, handle errors
   if (!services || services.length === 0) {
     return (

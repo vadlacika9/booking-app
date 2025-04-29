@@ -51,7 +51,7 @@ export async function DELETE(request) {
         }
       }),
 
-      db.services_category.deleteMany({
+      db.service_category.deleteMany({
         where:{
           service_id: Number(service_id)
         }

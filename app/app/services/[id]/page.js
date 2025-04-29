@@ -11,6 +11,7 @@ import ImageCarousel from '@/components/ServiceImageCaroussel';
 export default async function ServiceDetails({ params }) {
   const res = await params;
   const { id } = res;
+  console.log("id:" ,id)
   
   // Fetch service details and user session in parallel
   const [service, session] = await Promise.all([

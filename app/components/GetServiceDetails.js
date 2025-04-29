@@ -1,4 +1,5 @@
 export default async function getServiceDetails(id) {
+  console.log(id)
   try {
     const response = await fetch(`http://localhost:3000/api/services/${id}`, {
       cache: 'no-store' // For dynamic data

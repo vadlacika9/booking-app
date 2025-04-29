@@ -24,14 +24,6 @@ export async function GET() {
         }
       }
     });
-
-    if (!myServices || myServices.length === 0) {
-      return new Response(
-        JSON.stringify({ error: "Service not found" }),
-        { status: 404 } 
-      );
-    }
-
  
     const servicesWithFormattedData = myServices.map((service) => ({
       service_id: service.service_id,

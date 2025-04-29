@@ -22,6 +22,7 @@ export default function Carousel({ services }) {
 
   
   useEffect(() => {
+    console.log("services", services)
     if (!isSingleItem) {
       if (currentIndex === 0) {
         setTimeout(() => {
@@ -82,8 +83,8 @@ export default function Carousel({ services }) {
               <div className="relative overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                 <div className="w-[260px] h-[180px] relative">
                   <Image
-                    src={service.images[0]}
-                    alt={service.service_name}
+                    src={service?.images[0]}
+                    alt={service?.service_name}
                     fill
                     objectFit="cover"
                     className={`rounded-lg transition-transform duration-500 ${isHovering === index ? 'scale-110' : 'scale-100'}`}
@@ -92,7 +93,7 @@ export default function Carousel({ services }) {
                 </div>
                 <div className="flex flex-col absolute rounded-bl-lg rounded-tr-lg top-0 right-0 p-2 bg-black/80 text-white font-medium text-sm">
                   <div className="flex items-center gap-1">
-                    {Number(service.service_avg_rating).toFixed(1)} 
+                    {Number(service?.service_avg_rating).toFixed(1)} 
                     <span className="text-yellow-400">★</span>
                   </div>
                 </div>

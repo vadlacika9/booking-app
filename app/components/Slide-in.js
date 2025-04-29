@@ -112,7 +112,7 @@ const Slidein = () => {
               </svg>
               Coming soon...
             </p>
-            <p className="mt-4 text-indigo-700">Get early access to our mobile application by signing up for our newsletter!</p>
+            <p className="mt-4 text-indigo-700">Get early access to our mobile application by following us!</p>
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
       {/* X (Twitter) Button */}

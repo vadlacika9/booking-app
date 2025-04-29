@@ -8,6 +8,7 @@ export async function GET(request, { params }) {
   try {
 
     const { id } = await params;
+    console.log("route id", id)
  
 
     if (!id || isNaN(Number(id))) {
@@ -34,6 +35,7 @@ export async function GET(request, { params }) {
     });
 
 
+    console.log(service)
     if (!service) {
       return new Response(
         JSON.stringify({ error: "Service not found" }),
@@ -61,8 +63,8 @@ export async function GET(request, { params }) {
           county: service.services_location[0]?.location?.county,
           service_location: service.services_location[0]?.location?.city,
           service_address: service.services_location[0]?.location?.address,
-          days_available: service.duration[0].service_days_available,
-          service_rating: service.average_rating
+          days_available: service.duration[0]?.service_days_available,
+          service_rating: service?.average_rating
         }
       
     : [];

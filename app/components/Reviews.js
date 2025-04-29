@@ -207,9 +207,11 @@ const Reviews = ({ id }) => {
           } 
 
           {/* Felhasználónév */}
-          <div className="text-sm text-gray-600 mb-2">
-            Értékelő: {review.users.username}
-          </div>
+          <div className="text-sm text-gray-600 mb-2 flex items-center gap-2">
+  <span className="font-medium text-gray-800">{review.users.username}</span>
+  <span className="text-gray-500">•</span>
+  <span>{review.created_at.split('T')[0]}</span>
+</div>
 
           {/* Komment tartalma vagy szerkesztő mezője */}
           <div className="mb-3">

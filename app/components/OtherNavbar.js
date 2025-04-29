@@ -36,13 +36,13 @@ export default function OtherNavbar() {
         <div className="flex justify-between h-20">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="block h-14 w-auto">
+            <Link href="/" className="block h-20 w-auto">
               <Image 
                 src="/images/white_on_trans.png" 
                 width={100} 
                 height={100} 
                 alt="logo"
-                className="h-14 w-auto filter drop-shadow-md hover:brightness-125 transition-all duration-300"
+                className="h-20 w-auto filter drop-shadow-md hover:brightness-125 transition-all duration-300"
               />
             </Link>
           </div>

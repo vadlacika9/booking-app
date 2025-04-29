@@ -10,8 +10,8 @@ datasource db {
 model bookings {
   booking_id   Int         @id @default(autoincrement())
   created_at   DateTime    @default(now()) @db.Timestamp(0)
-  updated_at   DateTime?   @db.Timestamp(0)
-  status       String      @db.VarChar(50)
+  updated_at   DateTime    @default(now()) @db.Timestamp(0)
+  status       String      @db.VarChar(255)
   final_price  Float       @db.Float
   service_id   Int
   payment_id   Int
@@ -29,13 +29,13 @@ model bookings {
 }
 
 model duration {
-  start_time             String      @db.VarChar(11)
-  end_time               String?     @db.VarChar(11)
+  start_time             String      @db.VarChar(50)
+  end_time               String?     @db.VarChar(50)
   duration_id            Int         @id @default(autoincrement())
   service_id             Int?
   exception_id           Int?
+  service_days_available String?     @db.VarChar(60)
   booking_day            String?     @db.VarChar(50)
-  service_days_available String?     @db.VarChar(50)
   bookings               bookings[]
   services               services?   @relation(fields: [service_id], references: [service_id], onDelete: Restrict, onUpdate: Restrict, map: "duration_ibfk_1")
   exceptions             exceptions? @relation(fields: [exception_id], references: [exception_id], onDelete: Restrict, onUpdate: Restrict, map: "duration_ibfk_2")
@@ -49,9 +49,6 @@ model exceptions {
   is_available Boolean    @db.Bit(1)
   service_id   Int
   duration     duration[]
-  services     services   @relation(fields: [service_id], references: [service_id], onUpdate: Restrict, map: "exceptions_ibfk_1")
-
-  @@index([service_id], map: "service_id")
 }
 
 model feedback {
@@ -69,17 +66,17 @@ model feedback {
 }
 
 model location {
-  city              String              @db.VarChar(50)
+  city              String              @db.VarChar(255)
   postal_code       String              @db.VarChar(50)
-  county            String              @db.VarChar(50)
-  address           String              @db.VarChar(50)
+  county            String              @db.VarChar(255)
+  address           String              @db.VarChar(255)
   location_id       Int                 @id @default(autoincrement())
   services_location services_location[]
 }
 
 model notifications {
   notification_id Int      @id @default(autoincrement())
-  message         String   @db.VarChar(50)
+  message         String?  @db.VarChar(255)
   sent_at         DateTime @db.Date
   readed          Boolean  @db.Bit(1)
   user_id         Int
@@ -91,9 +88,8 @@ model notifications {
 model payments {
   payment_id Int        @id @default(autoincrement())
   value      Float      @db.Float
-  date       DateTime   @default(now()) @db.Date
-  status     String     @db.VarChar(50)
-  method     String     @db.VarChar(50)
+  status     String     @db.VarChar(255)
+  method     String     @db.VarChar(255)
   user_id    Int
   bookings   bookings[]
   users      users      @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "payments_ibfk_1")
@@ -102,63 +98,62 @@ model payments {
 }
 
 model promotions {
-  promotion_id    Int               @id @default(autoincrement())
-  promotion_code  String            @db.VarChar(50)
-  description     String?           @db.VarChar(50)
-  discount_type   String            @db.VarChar(50)
-  discount_value  Int
-  valid_from      DateTime          @db.Date
-  valid_until     DateTime          @db.Date
-  was_used        Boolean           @db.Bit(1)
-  bookings        bookings[]
-  user_promotions user_promotions[]
+  promotion_id   Int              @id @default(autoincrement())
+  promotion_code String           @db.VarChar(50)
+  description    String?          @db.VarChar(255)
+  discount_type  String?          @db.VarChar(255)
+  discount_value Int
+  valid_from     DateTime         @db.Date
+  valid_until    DateTime         @db.Date
+  was_used       Boolean          @db.Bit(1)
+  bookings       bookings[]
+  user_promotion user_promotion[]
 }
 
 model services {
-  service_id        Int                 @id @default(autoincrement())
-  name              String              @db.VarChar(50)
-  description       String              @db.VarChar(50)
-  created_at        DateTime            @default(now()) @db.Timestamp(0)
-  updated_at        DateTime            @default(now()) @db.Timestamp(0)
-  price             Float               @db.Float
-  user_id           Int
-  phone_number      String?             @db.VarChar(50)
-  average_rating    Decimal?            @default(0.00) @db.Decimal(3, 2)
-  bookings          bookings[]
-  duration          duration[]
-  exceptions        exceptions[]
-  feedback          feedback[]
-  images            images[]
-  users             users               @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "services_ibfk_2")
-  services_category services_category[]
-  services_location services_location[]
+  service_id         Int                 @id @default(autoincrement())
+  name               String              @db.VarChar(255)
+  description        String?             @db.LongText
+  created_at         DateTime            @default(now()) @db.Timestamp(0)
+  updated_at         DateTime            @default(now()) @db.Timestamp(0)
+  price              Float               @db.Float
+  user_id            Int
+  phone_number       String              @db.VarChar(255)
+  service_avg_rating Float?              @db.Float
+  bookings           bookings[]
+  duration           duration[]
+  feedback           feedback[]
+  images             images[]
+  service_category   service_category[]
+  users              users               @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "services_ibfk_2")
+  services_location  services_location[]
 
   @@index([user_id], map: "user_id")
 }
 
 model users {
-  first_name          String?           @db.VarChar(50)
-  email               String            @unique(map: "unique_email") @db.VarChar(50)
-  username            String            @db.VarChar(50)
-  last_name           String?           @db.VarChar(50)
-  role                String?           @db.VarChar(50)
-  created_at          DateTime          @default(now()) @db.Timestamp(0)
-  password            String?           @db.VarChar(255)
-  phone_number        String?           @db.VarChar(50)
-  user_id             Int               @id @default(autoincrement())
-  profile_pic         String?           @db.VarChar(255)
-  oauth               String?           @db.VarChar(50)
-  isVerified          String            @db.VarChar(50)
-  resetPasswordToken  String?           @db.VarChar(255)
-  resetPasswordExpire DateTime?         @db.DateTime(0)
-  verifiyToken        String?           @db.VarChar(255)
-  verifiyTokenExpire  DateTime?         @db.DateTime(0)
+  first_name          String           @db.VarChar(50)
+  email               String           @unique(map: "email") @db.VarChar(50)
+  username            String           @db.VarChar(50)
+  last_name           String           @db.VarChar(50)
+  role                String           @db.VarChar(50)
+  created_at          DateTime         @default(now()) @db.Timestamp(0)
+  password            String           @db.VarChar(255)
+  phone_number        String           @db.VarChar(255)
+  user_id             Int              @id @default(autoincrement())
+  profile_pic         String?          @db.VarChar(255)
+  oauth               String?          @db.VarChar(50)
+  isVerified          String?          @db.VarChar(50)
+  resetPasswordToken  String?          @db.VarChar(255)
+  resetPasswordExpire DateTime?        @db.DateTime(0)
+  verifiyToken        String?          @db.VarChar(255)
+  verifiyTokenExpire  DateTime?        @db.DateTime(0)
   feedback            feedback[]
   images              images[]
   notifications       notifications[]
   payments            payments[]
   services            services[]
-  user_promotions     user_promotions[]
+  user_promotion      user_promotion[]
 }
 
 model images {
@@ -166,7 +161,7 @@ model images {
   path       String    @db.VarChar(255)
   user_id    Int?
   service_id Int?
-  type       String    @db.VarChar(255)
+  type       String?   @db.VarChar(255)
   users      users?    @relation(fields: [user_id], references: [user_id], onDelete: Restrict, onUpdate: Restrict, map: "images_ibfk_1")
   services   services? @relation(fields: [service_id], references: [service_id], onDelete: Restrict, onUpdate: Restrict, map: "images_ibfk_2")
 
@@ -184,29 +179,29 @@ model services_location {
   @@index([location_id], map: "location_id")
 }
 
-model user_promotions {
-  user_id      Int
-  promotion_id Int
-  users        users      @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "user_promotions_ibfk_1")
-  promotions   promotions @relation(fields: [promotion_id], references: [promotion_id], onUpdate: Restrict, map: "user_promotions_ibfk_2")
-
-  @@id([user_id, promotion_id])
-  @@index([promotion_id], map: "promotion_id")
-}
-
 model category {
-  category_id       Int                 @id @default(autoincrement())
-  name              String              @db.VarChar(255)
-  description       String?             @db.Text
-  services_category services_category[]
+  name             String             @db.VarChar(255)
+  category_id      Int                @id @default(autoincrement())
+  description      String?            @db.VarChar(255)
+  service_category service_category[]
 }
 
-model services_category {
+model service_category {
   service_id  Int
   category_id Int
-  services    services @relation(fields: [service_id], references: [service_id], onUpdate: Restrict, map: "services_category_ibfk_1")
-  category    category @relation(fields: [category_id], references: [category_id], onUpdate: Restrict, map: "services_category_ibfk_2")
+  services    services @relation(fields: [service_id], references: [service_id], onUpdate: Restrict, map: "service_category_ibfk_1")
+  category    category @relation(fields: [category_id], references: [category_id], onUpdate: Restrict, map: "service_category_ibfk_2")
 
   @@id([service_id, category_id])
   @@index([category_id], map: "category_id")
+}
+
+model user_promotion {
+  user_id      Int
+  promotion_id Int
+  users        users      @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "user_promotion_ibfk_1")
+  promotions   promotions @relation(fields: [promotion_id], references: [promotion_id], onUpdate: Restrict, map: "user_promotion_ibfk_2")
+
+  @@id([user_id, promotion_id])
+  @@index([promotion_id], map: "promotion_id")
 }

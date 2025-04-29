@@ -16,7 +16,7 @@ export async function GET() {
             location: true
           }
         },
-        services_category: {
+        service_category: {
           include: {
             category:true
           }
@@ -51,9 +51,9 @@ export async function GET() {
       service_location: service.services_location[0]?.location?.city || null,
       service_address: service.services_location[0]?.location?.address || null,
       days_available: service.duration[0]?.service_days_available || [],
-      service_avg_rating :service.average_rating,
-      category_id: service.services_category[0]?.category_id ||null,
-      category_name: service.services_category[0]?.category?.name ||null
+      service_avg_rating : service?.service_avg_rating,
+      category_id: service.service_category[0]?.category_id ||null,
+      category_name: service.service_category[0]?.category?.name ||null
     }));
     
   
