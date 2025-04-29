@@ -14,9 +14,8 @@ export  async function GET(){
     const data  = await db.users.findFirst({
       where:{
         user_id: Number(userId)
-      },
-    })
-
+    }})
+  
     if (!data) {
       return new Response(
         JSON.stringify({ error: "No user found with this id." }),

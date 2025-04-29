@@ -10,7 +10,7 @@ export async function GET(){
 
     const myBookings = await db.payments.findMany({
       where: {
-        user_id: parseInt(userId),
+        user_id: Number(userId),
       },
       include: {
         bookings: {
