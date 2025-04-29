@@ -32,7 +32,7 @@ export default function Hero() {
   <Link href="/services" className="px-6 py-3 bg-[#6366F1] text-white rounded-lg hover:bg-indigo-700 transition">
     Get Started
   </Link>
-  <Link href="#about" className="px-6 py-3 bg-[#F59E0B] text-white rounded-lg hover:bg-yellow-600 transition">
+  <Link href="/about" className="px-6 py-3 bg-[#F59E0B] text-white rounded-lg hover:bg-yellow-600 transition">
     Learn More
   </Link>
 </div>
